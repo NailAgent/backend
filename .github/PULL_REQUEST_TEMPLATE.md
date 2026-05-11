@@ -1,6 +1,8 @@
-## 📄 Description
+## 💡 개요
+Issue Number: #
 
-## ✅ TO-DO
-- [ ] 
+## 🪐 주요 변경 사항
 
-## ⚙️ etc
+## ✅ 상세 내용
+
+## 🔔 참고 사항

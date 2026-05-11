@@ -6,11 +6,9 @@ labels: enhancement
 assignees: ''
 ---
 
-## 💡 개요
-Issue Number: #
+## 📄 Description
 
-## 🪐 주요 변경 사항
+## ✅ TO-DO
+- [ ] 
 
-## ✅ 상세 내용
-
-## 🔔 참고 사항
+## ⚙️ etc
