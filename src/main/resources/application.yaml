@@ -17,8 +17,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
-        format_sql: true
-    show-sql: true
+    show-sql: false
 
   jackson:
     property-naming-strategy: SNAKE_CASE
