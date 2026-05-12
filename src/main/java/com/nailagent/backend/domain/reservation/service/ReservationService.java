@@ -13,6 +13,7 @@ import com.nailagent.backend.global.exception.CustomException;
 import com.nailagent.backend.global.exception.ErrorCode;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -97,12 +98,21 @@ public class ReservationService {
         // name + phone_num으로 기존 고객 조회, 없으면 신규 등록
         Customer customer = customerRepository
                 .findByNameAndPhoneNum(request.getName(), request.getPhoneNum())
-                .orElseGet(() -> customerRepository.save(
-                        Customer.builder()
-                                .name(request.getName())
-                                .phoneNum(request.getPhoneNum())
-                                .build()
-                ));
+                .orElseGet(() -> {
+                    try {
+                        return customerRepository.save(
+                                Customer.builder()
+                                        .name(request.getName())
+                                        .phoneNum(request.getPhoneNum())
+                                        .build()
+                        );
+                    } catch (DataIntegrityViolationException e) {
+                        // 동시 요청으로 unique 제약 위반 시 기존 고객 재조회
+                        return customerRepository
+                                .findByNameAndPhoneNum(request.getName(), request.getPhoneNum())
+                                .orElseThrow(() -> new CustomException(ErrorCode.INTERNAL_SERVER_ERROR));
+                    }
+                });
 
         // 예약 생성
         Reservation reservation = Reservation.builder()
