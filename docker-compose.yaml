@@ -4,11 +4,14 @@ services:
   mysql:
     image: mysql:8.0
     container_name: nailagent-mysql
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: 1234
       MYSQL_DATABASE: nailagent
       MYSQL_USER: nailagent
       MYSQL_PASSWORD: 1234
+      MYSQL_CHARACTER_SET_SERVER: utf8mb4
+      MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
     ports:
       - "3306:3306"
     volumes:
