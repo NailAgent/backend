@@ -2,6 +2,8 @@ package com.nailagent.backend.domain.reservation.dto.Request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,13 +13,16 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class ReservationRequest {
 
+    @NotBlank(message = "예약자 성함은 필수입니다")
     @Schema(description = "예약자 성함", example = "눈송이")
     private String name;
 
+    @NotBlank(message = "전화번호는 필수입니다")
     @JsonProperty("phone_num")
     @Schema(description = "전화번호", example = "010-1234-5678")
     private String phoneNum;
 
+    @NotNull(message = "예약 날짜는 필수입니다")
     @JsonProperty("reserve_date")
     @Schema(description = "예약 날짜", example = "2026-05-07")
     private LocalDate reserveDate;

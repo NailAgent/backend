@@ -7,6 +7,7 @@ import com.nailagent.backend.domain.reservation.service.ReservationService;
 import com.nailagent.backend.global.common.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -43,7 +44,7 @@ public class ReservationController {
     @Operation(summary = "예약 생성", description = "새로운 예약을 등록합니다.")
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> createReservation(
-            @RequestBody ReservationRequest request
+            @Valid @RequestBody ReservationRequest request
     ) {
         reservationService.createReservation(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created(null));
