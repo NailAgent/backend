@@ -25,10 +25,13 @@ public class Reservation extends BaseEntity {
     private Integer estimatedDurationMin;
     private String service;
     private Boolean offRemoval;
+
+    @Column(columnDefinition = "VARCHAR(255) DEFAULT '사장님'")
     private String designer;
     private Integer depositAmount;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(255) DEFAULT 'PENDING'")
     private VisitStatus visitStatus;
 
     public enum VisitStatus {
