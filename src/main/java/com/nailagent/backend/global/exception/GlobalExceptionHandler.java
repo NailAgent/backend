@@ -2,6 +2,7 @@ package com.nailagent.backend.global.exception;
 
 import com.nailagent.backend.global.common.ApiResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -19,6 +20,22 @@ public class GlobalExceptionHandler {
                         errorCode.getHttpStatus().value(),
                         errorCode.getCode(),
                         errorCode.getMessage()
+                ));
+    }
+
+    // @Valid 검증 실패
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse<Void>> handleValidationException(MethodArgumentNotValidException e) {
+        ErrorCode errorCode = ErrorCode.INVALID_INPUT_VALUE;
+        String message = e.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getDefaultMessage())
+                .findFirst()
+                .orElse(errorCode.getMessage());
+        return ResponseEntity.status(errorCode.getHttpStatus())
+                .body(ApiResponse.error(
+                        errorCode.getHttpStatus().value(),
+                        errorCode.getCode(),
+                        message
                 ));
     }
 
