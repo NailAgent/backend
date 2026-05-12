@@ -114,7 +114,11 @@ public class ReservationService {
                 .estimatedDurationMin(request.getEstimatedDurationMin())
                 .service(request.getService())
                 .offRemoval(request.getOffRemoval())
-                .designer(request.getDesigner())
+                .designer(
+                        request.getDesigner() == null || request.getDesigner().isBlank()
+                                ? "사장님"
+                                : request.getDesigner()
+                )
                 .depositAmount(request.getDepositAmount())
                 .build();
 
