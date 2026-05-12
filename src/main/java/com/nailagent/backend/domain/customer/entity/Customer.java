@@ -7,7 +7,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "customers")
+@Table(
+        name = "customers",
+        uniqueConstraints = @UniqueConstraint(name = "uk_customers_name_phone", columnNames = {"name", "phone_num"})
+)
 @Getter
 @NoArgsConstructor
 public class Customer extends BaseEntity {
@@ -17,6 +20,8 @@ public class Customer extends BaseEntity {
     private Long id;
 
     private String kakaoUserId;
+
+    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
