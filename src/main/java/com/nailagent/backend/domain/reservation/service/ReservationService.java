@@ -1,7 +1,10 @@
 package com.nailagent.backend.domain.reservation.service;
 
-import com.nailagent.backend.domain.reservation.dto.ReservationListResponse;
-import com.nailagent.backend.domain.reservation.dto.ScheduleResponse;
+import com.nailagent.backend.domain.customer.entity.Customer;
+import com.nailagent.backend.domain.customer.repository.CustomerRepository;
+import com.nailagent.backend.domain.reservation.dto.Request.ReservationRequest;
+import com.nailagent.backend.domain.reservation.dto.Response.ReservationListResponse;
+import com.nailagent.backend.domain.reservation.dto.Response.ScheduleResponse;
 import com.nailagent.backend.domain.reservation.entity.Reservation;
 import com.nailagent.backend.domain.reservation.repository.ReservationRepository;
 import com.nailagent.backend.domain.shopinfo.entity.Shopinfo;
@@ -24,6 +27,7 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ShopinfoRepository shopinfoRepository;
+    private final CustomerRepository customerRepository;
 
     public ScheduleResponse getSchedule(LocalDate date) {
 
@@ -85,5 +89,34 @@ public class ReservationService {
                 .hasNext(reservationPage.hasNext())
                 .bookings(bookings)
                 .build();
+    }
+
+    public void createReservation(ReservationRequest request) {
+
+        // name + phone_num으로 기존 고객 조회, 없으면 신규 등록
+        Customer customer = customerRepository
+                .findByNameAndPhoneNum(request.getName(), request.getPhoneNum())
+                .orElseGet(() -> customerRepository.save(
+                        Customer.builder()
+                                .name(request.getName())
+                                .phoneNum(request.getPhoneNum())
+                                .build()
+                ));
+
+        // 예약 생성
+        Reservation reservation = Reservation.builder()
+                .customerId(customer.getId())
+                .name(request.getName())
+                .phoneNum(request.getPhoneNum())
+                .reserveDate(request.getReserveDate())
+                .reserveTime(request.getReserveTime())
+                .estimatedDurationMin(request.getEstimatedDurationMin())
+                .service(request.getService())
+                .offRemoval(request.getOffRemoval())
+                .designer(request.getDesigner())
+                .depositAmount(request.getDepositAmount())
+                .build();
+
+        reservationRepository.save(reservation);
     }
 }

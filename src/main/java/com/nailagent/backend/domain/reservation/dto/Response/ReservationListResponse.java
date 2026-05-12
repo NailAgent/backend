@@ -1,4 +1,4 @@
-package com.nailagent.backend.domain.reservation.dto;
+package com.nailagent.backend.domain.reservation.dto.Response;
 
 import lombok.Builder;
 import lombok.Getter;

@@ -1,13 +1,15 @@
 package com.nailagent.backend.domain.reservation.controller;
 
-import com.nailagent.backend.domain.reservation.dto.ReservationListResponse;
-import com.nailagent.backend.domain.reservation.dto.ScheduleResponse;
+import com.nailagent.backend.domain.reservation.dto.Request.ReservationRequest;
+import com.nailagent.backend.domain.reservation.dto.Response.ReservationListResponse;
+import com.nailagent.backend.domain.reservation.dto.Response.ScheduleResponse;
 import com.nailagent.backend.domain.reservation.service.ReservationService;
 import com.nailagent.backend.global.common.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,5 +38,14 @@ public class ReservationController {
             @RequestParam(defaultValue = "12") int size
     ) {
         return ResponseEntity.ok(ApiResponse.ok(reservationService.getReservations(page, size)));
+    }
+
+    @Operation(summary = "예약 생성", description = "새로운 예약을 등록합니다.")
+    @PostMapping
+    public ResponseEntity<ApiResponse<Void>> createReservation(
+            @RequestBody ReservationRequest request
+    ) {
+        reservationService.createReservation(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created(null));
     }
 }

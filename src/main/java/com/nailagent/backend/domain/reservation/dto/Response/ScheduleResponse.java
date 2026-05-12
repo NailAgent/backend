@@ -1,6 +1,5 @@
-package com.nailagent.backend.domain.reservation.dto;
+package com.nailagent.backend.domain.reservation.dto.Response;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 
