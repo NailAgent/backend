@@ -13,7 +13,10 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "서버 내부 오류가 발생했습니다."),
 
     // Reservation
-    INVALID_PAGINATION(HttpStatus.BAD_REQUEST, "INVALID_PAGINATION", "페이지 값이 올바르지 않습니다.");
+    INVALID_PAGINATION(HttpStatus.BAD_REQUEST, "INVALID_PAGINATION", "페이지 값이 올바르지 않습니다."),
+
+    // Shopinfo
+    SHOPINFO_NOT_FOUND(HttpStatus.NOT_FOUND, "SHOPINFO_NOT_FOUND", "샵 정보를 찾을 수 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

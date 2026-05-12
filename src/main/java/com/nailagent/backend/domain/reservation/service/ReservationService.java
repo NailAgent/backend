@@ -32,7 +32,8 @@ public class ReservationService {
     public ScheduleResponse getSchedule(LocalDate date) {
 
         // 샵 설정 조회 (항상 id=1 단일 row)
-        Shopinfo shopinfo = shopinfoRepository.findById(1).orElseThrow();
+        Shopinfo shopinfo = shopinfoRepository.findById(1)
+                .orElseThrow(() -> new CustomException(ErrorCode.SHOPINFO_NOT_FOUND));
 
         // 해당 날짜의 예약 목록 조회
         List<Reservation> reservations = reservationRepository.findAllByReserveDate(date);
