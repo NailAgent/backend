@@ -14,6 +14,7 @@ import com.nailagent.backend.global.exception.ErrorCode;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -93,6 +94,7 @@ public class ReservationService {
                 .build();
     }
 
+    @Transactional
     public void createReservation(ReservationRequest request) {
 
         // name + phone_num으로 기존 고객 조회, 없으면 신규 등록
