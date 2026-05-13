@@ -2,9 +2,20 @@ package com.nailagent.backend.domain.customer.repository;
 
 import com.nailagent.backend.domain.customer.entity.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
+
+    // 이름 + 전화번호로 기존 고객 조회 (예약 생성 시 신규/기존 고객 판별)
     Optional<Customer> findByNameAndPhoneNum(String name, String phoneNum);
+
+    // 고객 ID로 가장 최근 예약 날짜 조회
+    @Query("SELECT MAX(r.reserveDate) FROM Reservation r WHERE r.customerId = :customerId")
+    Optional<LocalDate> findLastReserveDateByCustomerId(Long customerId);
+
 }

@@ -11,17 +11,17 @@ INSERT INTO shopinfo (id, business_hour, closed_days, deposit_amount, account_nu
 VALUES (1, '평일: 10:00-21:00\n주말: 10:00-22:00', 1, 5000, '우리은행 1002-065-242977');
 
 -- Customers
-INSERT INTO customers (name, phone_num, noshow_count, created_at, updated_at)
-VALUES ('정교은', '010-1111-2222', 0, NOW(), NOW());
+INSERT INTO customers (name, phone_num, noshow_count, kakao_user_id, created_at, updated_at)
+VALUES ('정교은', '010-1111-2222', 0, 'kakao_001', NOW(), NOW());
 
-INSERT INTO customers (name, phone_num, noshow_count, created_at, updated_at)
-VALUES ('남민서', '010-2222-3333', 0, NOW(), NOW());
+INSERT INTO customers (name, phone_num, noshow_count, kakao_user_id, created_at, updated_at)
+VALUES ('남민서', '010-2222-3333', 0, 'kakao_002', NOW(), NOW());
 
-INSERT INTO customers (name, phone_num, noshow_count, created_at, updated_at)
-VALUES ('김미지', '010-3333-4444', 0, NOW(), NOW());
+INSERT INTO customers (name, phone_num, noshow_count, kakao_user_id, created_at, updated_at)
+VALUES ('김미지', '010-3333-4444', 0, 'kakao_003', NOW(), NOW());
 
-INSERT INTO customers (name, phone_num, noshow_count, created_at, updated_at)
-VALUES ('김지수', '010-4444-5555', 1, NOW(), NOW());
+INSERT INTO customers (name, phone_num, noshow_count, kakao_user_id, created_at, updated_at)
+VALUES ('김지수', '010-4444-5555', 1, 'kakao_004', NOW(), NOW());
 
 -- Reservation
 INSERT INTO reservation (customer_id, name, phone_num, reserve_date, reserve_time, estimated_duration_min, service, off_removal, deposit_amount, visit_status, created_at, updated_at)
