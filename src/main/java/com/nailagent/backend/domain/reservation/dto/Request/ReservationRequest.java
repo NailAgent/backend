@@ -15,6 +15,10 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class ReservationRequest {
 
+    @JsonProperty("kakao_user_id")
+    @Schema(description = "카카오 유저 ID", example = "kakao_001")
+    private String kakaoUserId;
+
     @NotBlank(message = "예약자 성함은 필수입니다")
     @Schema(description = "예약자 성함", example = "눈송이")
     private String name;

@@ -106,6 +106,7 @@ public class ReservationService {
                                 Customer.builder()
                                         .name(request.getName())
                                         .phoneNum(request.getPhoneNum())
+                                        .kakaoUserId(request.getKakaoUserId())
                                         .build()
                         );
                     } catch (DataIntegrityViolationException e) {
