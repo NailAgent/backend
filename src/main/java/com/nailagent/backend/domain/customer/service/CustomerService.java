@@ -12,7 +12,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +49,18 @@ public class CustomerService {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Customer> customerPage = customerRepository.findAll(pageable);
 
+        // 고객 ID 목록으로 최근 예약일 일괄 조회 (N+1 방지)
+        List<Long> customerIds = customerPage.getContent().stream()
+                .map(Customer::getId)
+                .toList();
+
+        Map<Long, LocalDate> lastReserveDateMap = customerRepository.findLastReserveDatesByCustomerIds(customerIds)
+                .stream()
+                .collect(Collectors.toMap(
+                        row -> (Long) row[0],
+                        row -> (LocalDate) row[1]
+                ));
+
         // 고객 목록을 DTO로 변환
         List<CustomerListResponse.CustomerItem> customers = customerPage.getContent().stream()
                 .map(c -> CustomerListResponse.CustomerItem.builder()
@@ -53,7 +68,7 @@ public class CustomerService {
                         .name(c.getName())
                         .phoneNum(c.getPhoneNum())
                         .noshowCount(c.getNoshowCount())
-                        .lastReserveDate(customerRepository.findLastReserveDateByCustomerId(c.getId()).orElse(null))
+                        .lastReserveDate(lastReserveDateMap.get(c.getId()))
                         .build())
                 .toList();
 

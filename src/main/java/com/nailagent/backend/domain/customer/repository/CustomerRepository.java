@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
@@ -18,5 +19,9 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     // 고객 ID로 가장 최근 예약 날짜 조회
     @Query("SELECT MAX(r.reserveDate) FROM Reservation r WHERE r.customerId = :customerId")
     Optional<LocalDate> findLastReserveDateByCustomerId(@Param("customerId") Long customerId);
+
+    // 고객 ID 목록 기준으로 최근 예약일 일괄 조회 (N+1 방지)
+    @Query("SELECT r.customerId, MAX(r.reserveDate) FROM Reservation r WHERE r.customerId IN :customerIds GROUP BY r.customerId")
+    List<Object[]> findLastReserveDatesByCustomerIds(@Param("customerIds") List<Long> customerIds);
 
 }
