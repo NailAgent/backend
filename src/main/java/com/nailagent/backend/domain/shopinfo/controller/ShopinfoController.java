@@ -6,6 +6,7 @@ import com.nailagent.backend.domain.shopinfo.service.ShopinfoService;
 import com.nailagent.backend.global.common.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +28,7 @@ public class ShopinfoController {
     @Operation(summary = "샵 정보 수정", description = "샵 정보를 수정합니다.")
     @PatchMapping
     public ResponseEntity<ApiResponse<Void>> updateShopinfo(
-            @RequestBody ShopinfoUpdateRequest request
+            @Valid @RequestBody ShopinfoUpdateRequest request
     ) {
         shopinfoService.updateShopinfo(request);
         return ResponseEntity.ok(ApiResponse.ok(null));
