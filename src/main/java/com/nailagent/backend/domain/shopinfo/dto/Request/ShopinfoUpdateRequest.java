@@ -2,6 +2,7 @@ package com.nailagent.backend.domain.shopinfo.dto.Request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -25,6 +26,7 @@ public class ShopinfoUpdateRequest {
     @Schema(description = "대표 시술 가격표", example = "{\\\"젤네일\\\": 50000, \\\"기본네일\\\": 30000}")
     private String servicesPrice;
 
+    @Min(value = 0, message = "예약금은 0 이상이어야 합니다")
     @JsonProperty("deposit_amount")
     @Schema(description = "예약금", example = "5000")
     private Integer depositAmount;
