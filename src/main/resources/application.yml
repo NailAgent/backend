@@ -1,23 +1,11 @@
 spring:
-  datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
-  sql:
-    init:
-      mode: always
-      encoding: UTF-8
+  profiles:
+    default: local
 
   jpa:
-    defer-datasource-initialization: true
-    hibernate:
-      ddl-auto: create
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
-    show-sql: false
 
   jackson:
     property-naming-strategy: SNAKE_CASE
