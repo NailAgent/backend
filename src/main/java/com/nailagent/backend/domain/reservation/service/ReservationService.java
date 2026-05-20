@@ -3,6 +3,7 @@ package com.nailagent.backend.domain.reservation.service;
 import com.nailagent.backend.domain.customer.entity.Customer;
 import com.nailagent.backend.domain.customer.repository.CustomerRepository;
 import com.nailagent.backend.domain.reservation.dto.Request.ReservationRequest;
+import com.nailagent.backend.domain.reservation.dto.Request.ReservationUpdateRequest;
 import com.nailagent.backend.domain.reservation.dto.Response.ReservationListResponse;
 import com.nailagent.backend.domain.reservation.dto.Response.ScheduleResponse;
 import com.nailagent.backend.domain.reservation.entity.Reservation;
@@ -136,5 +137,19 @@ public class ReservationService {
                 .build();
 
         reservationRepository.save(reservation);
+    }
+
+    @Transactional
+    public void updateReservation(Long reservationId, ReservationUpdateRequest request) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
+        reservation.update(request);
+    }
+
+    @Transactional
+    public void deleteReservation(Long reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
+        reservationRepository.delete(reservation);
     }
 }

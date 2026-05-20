@@ -1,6 +1,7 @@
 package com.nailagent.backend.domain.reservation.controller;
 
 import com.nailagent.backend.domain.reservation.dto.Request.ReservationRequest;
+import com.nailagent.backend.domain.reservation.dto.Request.ReservationUpdateRequest;
 import com.nailagent.backend.domain.reservation.dto.Response.ReservationListResponse;
 import com.nailagent.backend.domain.reservation.dto.Response.ScheduleResponse;
 import com.nailagent.backend.domain.reservation.service.ReservationService;
@@ -48,5 +49,24 @@ public class ReservationController {
     ) {
         reservationService.createReservation(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created(null));
+    }
+
+    @Operation(summary = "예약 수정", description = "예약 정보를 수정합니다. name, phone_num은 수정 불가합니다.")
+    @PatchMapping("/{reservation_id}")
+    public ResponseEntity<ApiResponse<Void>> updateReservation(
+            @PathVariable("reservation_id") Long reservationId,
+            @Valid @RequestBody ReservationUpdateRequest request
+    ) {
+        reservationService.updateReservation(reservationId, request);
+        return ResponseEntity.ok(ApiResponse.ok(null));
+    }
+
+    @Operation(summary = "예약 삭제", description = "예약을 삭제합니다.")
+    @DeleteMapping("/{reservation_id}")
+    public ResponseEntity<ApiResponse<Void>> deleteReservation(
+            @PathVariable("reservation_id") Long reservationId
+    ) {
+        reservationService.deleteReservation(reservationId);
+        return ResponseEntity.ok(ApiResponse.ok(null));
     }
 }
