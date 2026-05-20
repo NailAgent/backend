@@ -51,18 +51,16 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
-          envs: DB_URL,DB_USERNAME,DB_PASSWORD,CORS_ALLOWED_ORIGINS
+          envs: DB_URL,DB_USERNAME,DB_PASSWORD
           script: |
             cat > ~/app/.env << EOF
             SPRING_PROFILES_ACTIVE=prod
             DB_URL=$DB_URL
             DB_USERNAME=$DB_USERNAME
             DB_PASSWORD=$DB_PASSWORD
-            CORS_ALLOWED_ORIGINS=$CORS_ALLOWED_ORIGINS
             EOF
             sudo systemctl restart app
         env:
           DB_URL: ${{ secrets.DB_URL }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          CORS_ALLOWED_ORIGINS: ${{ secrets.CORS_ALLOWED_ORIGINS }}
