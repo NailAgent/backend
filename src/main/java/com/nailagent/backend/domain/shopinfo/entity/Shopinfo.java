@@ -1,5 +1,6 @@
 package com.nailagent.backend.domain.shopinfo.entity;
 
+import com.nailagent.backend.domain.shopinfo.dto.Request.ShopinfoUpdateRequest;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,11 +19,24 @@ public class Shopinfo {
     private String businessHour;
     private Integer closedDays;
     private String bookingFormText;
-    private String servicesJson;
+    private String servicesPrice;
     private Integer depositAmount;
     private String accountNumber;
     private String policyText;
     private String bookingMessageText;
     private LocalDateTime updatedAt;
+
+    public void update(ShopinfoUpdateRequest request) {
+
+        if (request.getBusinessHour() != null) this.businessHour = request.getBusinessHour();
+        if (request.getClosedDays() != null) this.closedDays = request.getClosedDays();
+        if (request.getBookingFormText() != null) this.bookingFormText = request.getBookingFormText();
+        if (request.getServicesPrice() != null) this.servicesPrice = request.getServicesPrice();
+        if (request.getDepositAmount() != null) this.depositAmount = request.getDepositAmount();
+        if (request.getAccountNumber() != null) this.accountNumber = request.getAccountNumber();
+        if (request.getPolicyText() != null) this.policyText = request.getPolicyText();
+        if (request.getBookingMessageText() != null) this.bookingMessageText = request.getBookingMessageText();
+        this.updatedAt = LocalDateTime.now();
+    }
 
 }
