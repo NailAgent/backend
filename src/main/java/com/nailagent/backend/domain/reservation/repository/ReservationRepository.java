@@ -8,6 +8,4 @@ import java.util.List;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     List<Reservation> findAllByReserveDate(LocalDate reserveDate);
-
-    boolean existsByPaymentKey(String paymentKey);
 }
