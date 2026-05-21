@@ -19,6 +19,9 @@ public enum ErrorCode {
     // Customer
     CUSTOMER_NOT_FOUND(HttpStatus.NOT_FOUND, "CUSTOMER_NOT_FOUND", "해당 고객을 찾을 수 없습니다."),
 
+    // Payment
+    DUPLICATE_PAYMENT_KEY(HttpStatus.CONFLICT, "DUPLICATE_PAYMENT_KEY", "이미 처리된 결제 키입니다."),
+
     // Shopinfo
     SHOPINFO_NOT_FOUND(HttpStatus.NOT_FOUND, "SHOPINFO_NOT_FOUND", "샵 정보를 찾을 수 없습니다.");
 

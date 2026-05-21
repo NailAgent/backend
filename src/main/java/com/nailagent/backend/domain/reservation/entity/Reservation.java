@@ -36,6 +36,15 @@ public class Reservation extends BaseEntity {
     @Column(columnDefinition = "VARCHAR(255) DEFAULT 'PENDING'")
     private VisitStatus visitStatus;
 
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(255) DEFAULT 'PENDING'")
+    private PaymentStatus paymentStatus;
+
+    @Column(unique = true)
+    private String paymentKey;
+
+    private Integer paidAmount;
+
     @Builder
     public Reservation(Long customerId, String name, String phoneNum, LocalDate reserveDate,
                        String reserveTime, Integer estimatedDurationMin, String service,
@@ -51,6 +60,7 @@ public class Reservation extends BaseEntity {
         this.designer = designer != null ? designer : "사장님";
         this.depositAmount = depositAmount;
         this.visitStatus = VisitStatus.PENDING;
+        this.paymentStatus = PaymentStatus.PENDING;
     }
 
     public void update(ReservationUpdateRequest request) {
@@ -64,7 +74,17 @@ public class Reservation extends BaseEntity {
         if (request.getVisitStatus() != null) this.visitStatus = request.getVisitStatus();
     }
 
+    public void updatePayment(String paymentKey, PaymentStatus paymentStatus, Integer paidAmount) {
+        this.paymentKey = paymentKey;
+        this.paymentStatus = paymentStatus;
+        this.paidAmount = paidAmount;
+    }
+
     public enum VisitStatus {
         PENDING, CONFIRMED, VISITED, NO_SHOW
+    }
+
+    public enum PaymentStatus {
+        PENDING, PAID, FAILED, CANCELLED
     }
 }

@@ -1,0 +1,30 @@
+package com.nailagent.backend.domain.payment.controller;
+
+import com.nailagent.backend.domain.payment.dto.Request.PaymentUpdateRequest;
+import com.nailagent.backend.domain.payment.service.PaymentService;
+import com.nailagent.backend.global.common.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@Tag(name = "Payment", description = "결제 관련 API")
+@RestController
+@RequestMapping("/api/v1/payments")
+@RequiredArgsConstructor
+public class PaymentController {
+
+    private final PaymentService paymentService;
+
+    @Operation(summary = "결제 상태 업데이트", description = "토스페이먼츠 결제 완료 후 결제 상태를 업데이트합니다. payment_key 중복 수신은 무시됩니다.")
+    @PatchMapping("/{reservation_id}")
+    public ResponseEntity<ApiResponse<Void>> updatePayment(
+            @PathVariable("reservation_id") Long reservationId,
+            @Valid @RequestBody PaymentUpdateRequest request
+    ) {
+        paymentService.updatePayment(reservationId, request);
+        return ResponseEntity.ok(ApiResponse.ok(null));
+    }
+}

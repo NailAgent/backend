@@ -30,5 +30,6 @@ public class ReservationListResponse {
         private Boolean offRemoval;
         private String designer;
         private String visitStatus;
+        private String paymentStatus;
     }
 }

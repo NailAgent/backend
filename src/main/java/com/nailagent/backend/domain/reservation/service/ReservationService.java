@@ -79,6 +79,7 @@ public class ReservationService {
                         .offRemoval(r.getOffRemoval())
                         .designer(r.getDesigner())
                         .visitStatus(r.getVisitStatus().name())
+                        .paymentStatus(r.getPaymentStatus().name())
                         .build())
                 .toList();
 
@@ -157,4 +158,5 @@ public class ReservationService {
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
         reservationRepository.delete(reservation);
     }
+
 }
