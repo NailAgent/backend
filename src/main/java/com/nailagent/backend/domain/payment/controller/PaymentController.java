@@ -18,7 +18,7 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-    @Operation(summary = "결제 상태 업데이트", description = "토스페이먼츠 결제 완료 후 결제 상태를 업데이트합니다. payment_key 중복 수신은 무시됩니다.")
+    @Operation(summary = "결제 상태 업데이트", description = "토스페이먼츠 결제 완료 후 결제 상태를 업데이트합니다. 동일한 payment_key가 이미 존재하면 409 CONFLICT를 반환합니다.")
     @PatchMapping("/{reservation_id}")
     public ResponseEntity<ApiResponse<Void>> updatePayment(
             @PathVariable("reservation_id") Long reservationId,
