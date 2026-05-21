@@ -26,7 +26,11 @@ public class PaymentService {
             reservation.updatePayment(request.getPaymentKey(), request.getPaymentStatus(), request.getAmount());
             reservationRepository.flush();
         } catch (DataIntegrityViolationException e) {
-            throw new CustomException(ErrorCode.DUPLICATE_PAYMENT_KEY);
+            String message = e.getMostSpecificCause().getMessage();
+            if (message != null && message.contains("payment_key")) {
+                throw new CustomException(ErrorCode.DUPLICATE_PAYMENT_KEY);
+            }
+            throw e;
         }
     }
 
