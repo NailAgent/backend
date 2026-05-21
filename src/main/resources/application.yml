@@ -18,6 +18,10 @@ server:
       enabled: true
       force: true
 
+toss:
+  client-key: ${TOSS_CLIENT_KEY}
+  secret-key: ${TOSS_SECRET_KEY}
+
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
