@@ -52,44 +52,52 @@
 
 <script src="https://js.tosspayments.com/v1/payment-widget"></script>
 <script th:inline="javascript">
-    (async () => {
-        const clientKey    = /*[[${clientKey}]]*/ '';
-        const amount       = /*[[${amount}]]*/ 0;
-        const orderId      = /*[[${orderId}]]*/ '';
-        const orderName    = /*[[${orderName}]]*/ '';
-        const customerName = /*[[${customerName}]]*/ '';
+    var clientKey    = /*[[${clientKey}]]*/ '';
+    var amount       = /*[[${amount}]]*/ 0;
+    var orderId      = /*[[${orderId}]]*/ '';
+    var orderName    = /*[[${orderName}]]*/ '';
+    var customerName = /*[[${customerName}]]*/ '';
 
-        const paymentWidget = PaymentWidget(clientKey, PaymentWidget.ANONYMOUS);
+    var paymentWidget = PaymentWidget(clientKey, PaymentWidget.ANONYMOUS);
 
-        await paymentWidget.renderPaymentMethods('#payment-widget', { value: amount });
-        await paymentWidget.renderAgreement('#agreement', { variantKey: 'AGREEMENT' });
+    var paymentMethodsWidget = paymentWidget.renderPaymentMethods(
+        '#payment-widget',
+        { value: amount },
+        { variantKey: 'DEFAULT' }
+    );
 
-        const btn = document.getElementById('payment-button');
-        const errBox = document.getElementById('error-message');
+    paymentWidget.renderAgreement(
+        '#agreement',
+        { variantKey: 'AGREEMENT' }
+    );
+
+    var btn    = document.getElementById('payment-button');
+    var errBox = document.getElementById('error-message');
+
+    paymentMethodsWidget.on('ready', function () {
         btn.disabled = false;
         btn.textContent = '결제하기';
+    });
 
-        btn.addEventListener('click', async () => {
-            btn.disabled = true;
-            btn.textContent = '결제 처리 중...';
-            errBox.style.display = 'none';
-            try {
-                await paymentWidget.requestPayment({
-                    orderId: orderId,
-                    orderName: orderName,
-                    customerName: customerName,
-                    successUrl: window.location.origin + '/payment/success',
-                    failUrl: window.location.origin + '/payment/fail'
-                });
-            } catch (e) {
-                console.error('결제 오류:', e);
-                errBox.textContent = e.message || '결제 중 오류가 발생했습니다.';
-                errBox.style.display = 'block';
-                btn.disabled = false;
-                btn.textContent = '결제하기';
-            }
+    btn.addEventListener('click', function () {
+        btn.disabled = true;
+        btn.textContent = '결제 처리 중...';
+        errBox.style.display = 'none';
+
+        paymentWidget.requestPayment({
+            orderId: orderId,
+            orderName: orderName,
+            customerName: customerName,
+            successUrl: window.location.origin + '/payment/success',
+            failUrl: window.location.origin + '/payment/fail'
+        }).catch(function (e) {
+            console.error('결제 오류:', e);
+            errBox.textContent = e.message || '결제 중 오류가 발생했습니다.';
+            errBox.style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = '결제하기';
         });
-    })();
+    });
 </script>
 </body>
 </html>
