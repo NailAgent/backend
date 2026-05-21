@@ -30,7 +30,7 @@ public class CustomerController {
     @GetMapping
     public ResponseEntity<ApiResponse<CustomerListResponse>> getCustomers(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "12") int size
+            @RequestParam(defaultValue = "100") int size
     ) {
         return ResponseEntity.ok(ApiResponse.ok(customerService.getCustomers(page, size)));
     }
