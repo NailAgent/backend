@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import java.util.Map;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -44,11 +45,11 @@ public class ReservationController {
 
     @Operation(summary = "예약 생성", description = "새로운 예약을 등록합니다.")
     @PostMapping
-    public ResponseEntity<ApiResponse<Void>> createReservation(
+    public ResponseEntity<ApiResponse<Map<String, Long>>> createReservation(
             @Valid @RequestBody ReservationRequest request
     ) {
-        reservationService.createReservation(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created(null));
+        Long id = reservationService.createReservation(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created(Map.of("id", id)));
     }
 
     @Operation(summary = "예약 수정", description = "예약 정보를 수정합니다. name, phone_num은 수정 불가합니다.")

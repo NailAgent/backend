@@ -97,7 +97,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public void createReservation(ReservationRequest request) {
+    public Long createReservation(ReservationRequest request) {
 
         // name + phone_num으로 기존 고객 조회, 없으면 신규 등록
         Customer customer = customerRepository
@@ -143,6 +143,7 @@ public class ReservationService {
                 .build();
 
         reservationRepository.save(reservation);
+        return reservation.getId();
     }
 
     @Transactional
