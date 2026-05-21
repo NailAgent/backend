@@ -37,4 +37,8 @@ public class Customer extends BaseEntity {
         this.phoneNum = phoneNum;
         this.noshowCount = 0;
     }
+
+    public void updateKakaoUserId(String kakaoUserId) {
+        this.kakaoUserId = kakaoUserId;
+    }
 }

@@ -118,6 +118,11 @@ public class ReservationService {
                     }
                 });
 
+        // 기존 고객에 kakao_user_id가 없고 요청에 있는 경우 업데이트 (다음 방문부터 기존 고객으로 인식)
+        if (customer.getKakaoUserId() == null && request.getKakaoUserId() != null) {
+            customer.updateKakaoUserId(request.getKakaoUserId());
+        }
+
         // 예약 생성
         Reservation reservation = Reservation.builder()
                 .customerId(customer.getId())
