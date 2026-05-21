@@ -23,8 +23,12 @@ public class ShopinfoUpdateRequest {
     private String bookingFormText;
 
     @JsonProperty("services_price")
-    @Schema(description = "대표 시술 가격표", example = "{\\\"젤네일\\\": 50000, \\\"기본네일\\\": 30000}")
+    @Schema(description = "대표 시술 가격표", example = "젤네일 50000원 / 기본네일 30000원 / 페디큐어 40000원")
     private String servicesPrice;
+
+    @JsonProperty("service_durations")
+    @Schema(description = "시술별 소요 시간", example = "젤네일 60분 / 기본네일 45분 / 페디큐어 60분")
+    private String serviceDurations;
 
     @Min(value = 0, message = "예약금은 0 이상이어야 합니다")
     @JsonProperty("deposit_amount")
