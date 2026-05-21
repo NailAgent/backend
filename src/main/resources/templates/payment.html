@@ -11,17 +11,23 @@
         .card { background: white; border-radius: 16px; padding: 28px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
         h2 { font-size: 18px; font-weight: 700; margin-bottom: 20px; color: #191919; }
         .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 14px; color: #555; }
-        .info-row:last-of-type { border-bottom: none; }
+        .info-row:last-of-type { border-bottom: none; margin-bottom: 28px; }
         .info-row span:last-child { font-weight: 600; color: #191919; }
         .amount { font-size: 22px !important; color: #3182f6 !important; }
-        #payment-widget { margin: 24px 0; }
-        #payment-button {
-            width: 100%; padding: 16px; background: #3182f6; color: white;
-            border: none; border-radius: 12px; font-size: 16px; font-weight: 700;
-            cursor: pointer; transition: background 0.2s;
+        .pay-btn {
+            width: 100%; padding: 16px; border: none; border-radius: 12px;
+            font-size: 16px; font-weight: 700; cursor: pointer; transition: background 0.2s;
+            margin-bottom: 12px;
         }
-        #payment-button:hover { background: #1b64da; }
-        #payment-button:disabled { background: #b0c4e8; cursor: not-allowed; }
+        .btn-card  { background: #3182f6; color: white; }
+        .btn-card:hover  { background: #1b64da; }
+        .btn-toss  { background: #0064ff; color: white; }
+        .btn-toss:hover  { background: #0050cc; }
+        #error-message {
+            display: none; color: #e03131; font-size: 13px;
+            margin-bottom: 12px; padding: 10px;
+            background: #fff3f3; border-radius: 8px;
+        }
     </style>
 </head>
 <body>
@@ -41,16 +47,14 @@
             <span class="amount" th:text="${#numbers.formatInteger(amount, 0, 'COMMA') + '원'}"></span>
         </div>
 
-        <div id="payment-widget"></div>
-        <div id="agreement"></div>
+        <div id="error-message"></div>
 
-        <div id="error-message" style="display:none; color:#e03131; font-size:13px; margin-bottom:12px; padding:10px; background:#fff3f3; border-radius:8px;"></div>
-
-        <button id="payment-button" disabled>로딩 중...</button>
+        <button class="pay-btn btn-card" onclick="pay('카드')">카드 결제</button>
+        <button class="pay-btn btn-toss" onclick="pay('토스페이')">토스페이</button>
     </div>
 </div>
 
-<script src="https://js.tosspayments.com/v1/payment-widget"></script>
+<script src="https://js.tosspayments.com/v1"></script>
 <script th:inline="javascript">
     var clientKey    = /*[[${clientKey}]]*/ '';
     var amount       = /*[[${amount}]]*/ 0;
@@ -58,46 +62,25 @@
     var orderName    = /*[[${orderName}]]*/ '';
     var customerName = /*[[${customerName}]]*/ '';
 
-    var paymentWidget = PaymentWidget(clientKey, PaymentWidget.ANONYMOUS);
+    var tossPayments = TossPayments(clientKey);
 
-    var paymentMethodsWidget = paymentWidget.renderPaymentMethods(
-        '#payment-widget',
-        { value: amount },
-        { variantKey: 'DEFAULT' }
-    );
-
-    paymentWidget.renderAgreement(
-        '#agreement',
-        { variantKey: 'AGREEMENT' }
-    );
-
-    var btn    = document.getElementById('payment-button');
-    var errBox = document.getElementById('error-message');
-
-    paymentMethodsWidget.on('ready', function () {
-        btn.disabled = false;
-        btn.textContent = '결제하기';
-    });
-
-    btn.addEventListener('click', function () {
-        btn.disabled = true;
-        btn.textContent = '결제 처리 중...';
+    function pay(method) {
+        var errBox = document.getElementById('error-message');
         errBox.style.display = 'none';
 
-        paymentWidget.requestPayment({
+        tossPayments.requestPayment(method, {
+            amount: amount,
             orderId: orderId,
             orderName: orderName,
             customerName: customerName,
             successUrl: window.location.origin + '/payment/success',
             failUrl: window.location.origin + '/payment/fail'
-        }).catch(function (e) {
+        }).catch(function(e) {
             console.error('결제 오류:', e);
             errBox.textContent = e.message || '결제 중 오류가 발생했습니다.';
             errBox.style.display = 'block';
-            btn.disabled = false;
-            btn.textContent = '결제하기';
         });
-    });
+    }
 </script>
 </body>
 </html>
