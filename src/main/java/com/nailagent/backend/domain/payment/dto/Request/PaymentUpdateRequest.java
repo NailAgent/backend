@@ -1,7 +1,7 @@
 package com.nailagent.backend.domain.payment.dto.Request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.nailagent.backend.domain.reservation.entity.Reservation.PaymentStatus;
+import com.nailagent.backend.domain.payment.entity.Payment.PaymentStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

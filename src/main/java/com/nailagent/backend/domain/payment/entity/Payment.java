@@ -41,3 +41,4 @@ public class Payment extends BaseEntity {
         PENDING, PAID, FAILED, CANCELLED
     }
 }
+

@@ -1,5 +1,6 @@
 package com.nailagent.backend.domain.reservation.entity;
 
+import com.nailagent.backend.domain.payment.entity.Payment.PaymentStatus;
 import com.nailagent.backend.domain.reservation.dto.Request.ReservationUpdateRequest;
 import com.nailagent.backend.global.common.BaseEntity;
 import jakarta.persistence.*;
@@ -82,9 +83,5 @@ public class Reservation extends BaseEntity {
 
     public enum VisitStatus {
         PENDING, CONFIRMED, VISITED, NO_SHOW
-    }
-
-    public enum PaymentStatus {
-        PENDING, PAID, FAILED, CANCELLED
     }
 }
