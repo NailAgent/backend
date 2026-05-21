@@ -3,6 +3,7 @@ package com.nailagent.backend.domain.reservation.service;
 import com.nailagent.backend.domain.customer.entity.Customer;
 import com.nailagent.backend.domain.customer.repository.CustomerRepository;
 import com.nailagent.backend.domain.reservation.dto.Request.ReservationRequest;
+import com.nailagent.backend.domain.reservation.dto.Request.ReservationUpdateRequest;
 import com.nailagent.backend.domain.reservation.dto.Response.ReservationListResponse;
 import com.nailagent.backend.domain.reservation.dto.Response.ScheduleResponse;
 import com.nailagent.backend.domain.reservation.entity.Reservation;
@@ -78,6 +79,7 @@ public class ReservationService {
                         .offRemoval(r.getOffRemoval())
                         .designer(r.getDesigner())
                         .visitStatus(r.getVisitStatus().name())
+                        .paymentStatus(r.getPaymentStatus().name())
                         .build())
                 .toList();
 
@@ -117,6 +119,11 @@ public class ReservationService {
                     }
                 });
 
+        // 기존 고객에 kakao_user_id가 없고 요청에 있는 경우 업데이트 (다음 방문부터 기존 고객으로 인식)
+        if (customer.getKakaoUserId() == null && request.getKakaoUserId() != null) {
+            customer.updateKakaoUserId(request.getKakaoUserId());
+        }
+
         // 예약 생성
         Reservation reservation = Reservation.builder()
                 .customerId(customer.getId())
@@ -137,4 +144,19 @@ public class ReservationService {
 
         reservationRepository.save(reservation);
     }
+
+    @Transactional
+    public void updateReservation(Long reservationId, ReservationUpdateRequest request) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
+        reservation.update(request);
+    }
+
+    @Transactional
+    public void deleteReservation(Long reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
+        reservationRepository.delete(reservation);
+    }
+
 }
