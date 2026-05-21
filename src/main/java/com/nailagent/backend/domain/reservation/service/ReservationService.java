@@ -109,6 +109,7 @@ public class ReservationService {
                                         .name(request.getName())
                                         .phoneNum(request.getPhoneNum())
                                         .kakaoUserId(request.getKakaoUserId())
+                                        .plusfriendUserKey(request.getPlusfriendUserKey())
                                         .build()
                         );
                     } catch (DataIntegrityViolationException e) {
@@ -122,6 +123,9 @@ public class ReservationService {
         // 기존 고객에 kakao_user_id가 없고 요청에 있는 경우 업데이트 (다음 방문부터 기존 고객으로 인식)
         if (customer.getKakaoUserId() == null && request.getKakaoUserId() != null) {
             customer.updateKakaoUserId(request.getKakaoUserId());
+        }
+        if (customer.getPlusfriendUserKey() == null && request.getPlusfriendUserKey() != null) {
+            customer.updatePlusfriendUserKey(request.getPlusfriendUserKey());
         }
 
         // 예약 생성

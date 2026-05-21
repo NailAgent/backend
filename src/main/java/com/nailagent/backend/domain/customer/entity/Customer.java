@@ -21,6 +21,8 @@ public class Customer extends BaseEntity {
 
     private String kakaoUserId;
 
+    private String plusfriendUserKey;
+
     @Column(nullable = false)
     private String name;
 
@@ -31,8 +33,9 @@ public class Customer extends BaseEntity {
     private Integer noshowCount;
 
     @Builder
-    public Customer(String kakaoUserId, String name, String phoneNum) {
+    public Customer(String kakaoUserId, String plusfriendUserKey, String name, String phoneNum) {
         this.kakaoUserId = kakaoUserId;
+        this.plusfriendUserKey = plusfriendUserKey;
         this.name = name;
         this.phoneNum = phoneNum;
         this.noshowCount = 0;
@@ -40,5 +43,9 @@ public class Customer extends BaseEntity {
 
     public void updateKakaoUserId(String kakaoUserId) {
         this.kakaoUserId = kakaoUserId;
+    }
+
+    public void updatePlusfriendUserKey(String plusfriendUserKey) {
+        this.plusfriendUserKey = plusfriendUserKey;
     }
 }

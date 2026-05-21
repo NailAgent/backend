@@ -26,7 +26,7 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
 
     public KakaoCustomerResponse lookupKakaoCustomer(KakaoCustomerRequest request) {
-        return customerRepository.findByKakaoUserId(request.getKakaoUserId())
+        return customerRepository.findByPlusfriendUserKey(request.getPlusfriendUserKey())
                 .map(customer -> KakaoCustomerResponse.builder()
                         .isExisting(true)
                         .name(customer.getName())

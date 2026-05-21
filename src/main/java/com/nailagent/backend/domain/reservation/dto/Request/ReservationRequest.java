@@ -19,6 +19,10 @@ public class ReservationRequest {
     @Schema(description = "카카오 유저 ID", example = "kakao_001")
     private String kakaoUserId;
 
+    @JsonProperty("plusfriend_user_key")
+    @Schema(description = "카카오 플러스친구 유저 키", example = "SPD8QKGzFvSE")
+    private String plusfriendUserKey;
+
     @NotBlank(message = "예약자 성함은 필수입니다")
     @Schema(description = "예약자 성함", example = "눈송이")
     private String name;

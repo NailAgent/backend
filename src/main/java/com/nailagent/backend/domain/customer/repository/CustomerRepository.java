@@ -19,6 +19,9 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     // 카카오 유저 ID로 기존 고객 조회
     Optional<Customer> findByKakaoUserId(String kakaoUserId);
 
+    // 플러스친구 유저 키로 기존 고객 조회
+    Optional<Customer> findByPlusfriendUserKey(String plusfriendUserKey);
+
     // 고객 ID로 가장 최근 예약 날짜 조회
     @Query("SELECT MAX(r.reserveDate) FROM Reservation r WHERE r.customerId = :customerId")
     Optional<LocalDate> findLastReserveDateByCustomerId(@Param("customerId") Long customerId);
