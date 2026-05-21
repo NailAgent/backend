@@ -1,7 +1,9 @@
 package com.nailagent.backend.domain.customer.service;
 
+import com.nailagent.backend.domain.customer.dto.Request.KakaoCustomerRequest;
 import com.nailagent.backend.domain.customer.dto.Response.CustomerListResponse;
 import com.nailagent.backend.domain.customer.dto.Response.CustomerResponse;
+import com.nailagent.backend.domain.customer.dto.Response.KakaoCustomerResponse;
 import com.nailagent.backend.domain.customer.entity.Customer;
 import com.nailagent.backend.domain.customer.repository.CustomerRepository;
 import com.nailagent.backend.global.exception.CustomException;
@@ -22,6 +24,20 @@ import java.util.stream.Collectors;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+
+    public KakaoCustomerResponse lookupKakaoCustomer(KakaoCustomerRequest request) {
+        return customerRepository.findByKakaoUserId(request.getKakaoUserId())
+                .map(customer -> KakaoCustomerResponse.builder()
+                        .isExisting(true)
+                        .name(customer.getName())
+                        .phoneNum(customer.getPhoneNum())
+                        .build())
+                .orElse(KakaoCustomerResponse.builder()
+                        .isExisting(false)
+                        .name(null)
+                        .phoneNum(null)
+                        .build());
+    }
 
     public CustomerResponse getCustomer(Long customerId) {
 
