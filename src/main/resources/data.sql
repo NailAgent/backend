@@ -7,7 +7,7 @@ TRUNCATE TABLE reservation;
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- ShopInfo
-INSERT INTO shopinfo (id, business_hour, closed_days, deposit_amount, account_number, booking_form_text, services_price, policy_text, booking_message_text)
+INSERT INTO shopinfo (id, business_hour, closed_days, deposit_amount, account_number, booking_form_text, services_price, service_durations, policy_text, booking_message_text)
 VALUES (
     1,
     '평일: 10:00-21:00\n주말: 10:00-22:00',
@@ -15,7 +15,8 @@ VALUES (
     5000,
     '우리은행 1002-065-242977',
     '아래 예약 형식에 맞게 채워서 보내주세요.\n- 성함:\n- 전화번호:\n- 젤제거 유무(O/X):\n- 예약 희망 날짜:\n- 예약 희망 시간:',
-    '{"젤네일": 50000, "기본네일": 30000, "페디큐어": 40000}',
+    '젤네일 50000원 / 기본네일 30000원 / 페디큐어 40000원',
+    '젤네일 60분 / 기본네일 45분 / 페디큐어 60분',
     '영업시간: 10:00-22:00 / 매주 월요일 정기휴무 / 예약금 5000원',
     '예약이 확정되었습니다! 방문 전날 리마인드 문자를 보내드립니다.'
 );

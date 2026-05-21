@@ -26,6 +26,7 @@ public class ShopinfoService {
                 .closedDays(shopinfo.getClosedDays())
                 .bookingFormText(shopinfo.getBookingFormText())
                 .servicesPrice(shopinfo.getServicesPrice())
+                .serviceDurations(shopinfo.getServiceDurations())
                 .depositAmount(shopinfo.getDepositAmount())
                 .accountNumber(shopinfo.getAccountNumber())
                 .policyText((shopinfo.getPolicyText()))

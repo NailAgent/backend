@@ -11,6 +11,7 @@ public class ShopinfoResponse {
     private Integer closedDays;
     private String bookingFormText;
     private String servicesPrice;
+    private String serviceDurations;
     private Integer depositAmount;
     private String accountNumber;
     private String policyText;
