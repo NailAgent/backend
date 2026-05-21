@@ -27,4 +27,13 @@ public class PaymentController {
         paymentService.updatePayment(reservationId, request);
         return ResponseEntity.ok(ApiResponse.ok(null));
     }
+
+    @Operation(summary = "결제 환불", description = "결제 완료(PAID) 상태의 예약을 환불(CANCELLED) 처리합니다. PAID 상태가 아니면 400을 반환합니다.")
+    @PostMapping("/{reservation_id}/refund")
+    public ResponseEntity<ApiResponse<Void>> refundPayment(
+            @PathVariable("reservation_id") Long reservationId
+    ) {
+        paymentService.refundPayment(reservationId);
+        return ResponseEntity.ok(ApiResponse.ok(null));
+    }
 }

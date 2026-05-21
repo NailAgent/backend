@@ -1,6 +1,7 @@
 package com.nailagent.backend.domain.payment.service;
 
 import com.nailagent.backend.domain.payment.dto.Request.PaymentUpdateRequest;
+import com.nailagent.backend.domain.payment.entity.Payment.PaymentStatus;
 import com.nailagent.backend.domain.reservation.entity.Reservation;
 import com.nailagent.backend.domain.reservation.repository.ReservationRepository;
 import com.nailagent.backend.global.exception.CustomException;
@@ -27,5 +28,17 @@ public class PaymentService {
         } catch (DataIntegrityViolationException e) {
             throw new CustomException(ErrorCode.DUPLICATE_PAYMENT_KEY);
         }
+    }
+
+    @Transactional
+    public void refundPayment(Long reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
+
+        if (reservation.getPaymentStatus() != PaymentStatus.PAID) {
+            throw new CustomException(ErrorCode.PAYMENT_NOT_PAID);
+        }
+
+        reservation.cancelPayment();
     }
 }

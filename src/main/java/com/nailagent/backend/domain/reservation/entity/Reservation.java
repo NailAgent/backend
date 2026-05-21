@@ -81,6 +81,10 @@ public class Reservation extends BaseEntity {
         this.paidAmount = paidAmount;
     }
 
+    public void cancelPayment() {
+        this.paymentStatus = PaymentStatus.CANCELLED;
+    }
+
     public enum VisitStatus {
         PENDING, CONFIRMED, VISITED, NO_SHOW
     }
