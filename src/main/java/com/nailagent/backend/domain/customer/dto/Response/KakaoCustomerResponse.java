@@ -13,6 +13,7 @@ public class KakaoCustomerResponse {
     @Schema(description = "기존 고객 여부", example = "true")
     private Boolean isExisting;
 
+    @JsonProperty("name")
     @Schema(description = "고객 성함 (신규 고객이면 null)", example = "홍다인")
     private String name;
 
