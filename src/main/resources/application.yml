@@ -22,6 +22,11 @@ toss:
   client-key: ${TOSS_CLIENT_KEY}
   secret-key: ${TOSS_SECRET_KEY}
 
+google:
+  calendar:
+    id: ${GOOGLE_CALENDAR_ID}
+    credentials-path: ${GOOGLE_CREDENTIALS_PATH:classpath:google-credentials.json}
+
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
