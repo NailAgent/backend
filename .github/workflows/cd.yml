@@ -63,6 +63,7 @@ jobs:
             GOOGLE_CALENDAR_ID=$GOOGLE_CALENDAR_ID
             EOF
             echo "$GOOGLE_CREDENTIALS_JSON" > ~/app/google-credentials.json
+            chmod 600 ~/app/google-credentials.json
             echo "GOOGLE_CREDENTIALS_PATH=file:$(realpath ~/app/google-credentials.json)" >> ~/app/.env
             sudo systemctl restart app
         env:

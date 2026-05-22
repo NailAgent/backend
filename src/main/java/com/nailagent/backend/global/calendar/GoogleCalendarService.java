@@ -9,6 +9,8 @@ import com.google.api.services.calendar.model.EventDateTime;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.nailagent.backend.domain.reservation.entity.Reservation;
+import com.nailagent.backend.global.exception.CustomException;
+import com.nailagent.backend.global.exception.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
@@ -26,29 +28,35 @@ import java.util.List;
 @Service
 public class GoogleCalendarService {
 
-    private final Calendar calendar;
+    private Calendar calendar;
     private final String calendarId;
 
     public GoogleCalendarService(
             @Value("${google.calendar.id}") String calendarId,
             @Value("${google.calendar.credentials-path}") String credentialsPath,
             ResourceLoader resourceLoader
-    ) throws Exception {
+    ) {
         this.calendarId = calendarId;
 
-        InputStream credentialsStream = resourceLoader.getResource(credentialsPath).getInputStream();
-        GoogleCredentials credentials = GoogleCredentials
-                .fromStream(credentialsStream)
-                .createScoped(List.of(CalendarScopes.CALENDAR));
+        try {
+            InputStream credentialsStream = resourceLoader.getResource(credentialsPath).getInputStream();
+            GoogleCredentials credentials = GoogleCredentials
+                    .fromStream(credentialsStream)
+                    .createScoped(List.of(CalendarScopes.CALENDAR));
 
-        this.calendar = new Calendar.Builder(
-                GoogleNetHttpTransport.newTrustedTransport(),
-                GsonFactory.getDefaultInstance(),
-                new HttpCredentialsAdapter(credentials)
-        ).setApplicationName("NailAgent").build();
+            this.calendar = new Calendar.Builder(
+                    GoogleNetHttpTransport.newTrustedTransport(),
+                    GsonFactory.getDefaultInstance(),
+                    new HttpCredentialsAdapter(credentials)
+            ).setApplicationName("NailAgent").build();
+        } catch (Exception e) {
+            log.error("Google Calendar 클라이언트 초기화 실패 - 캘린더 연동이 비활성화됩니다", e);
+            this.calendar = null;
+        }
     }
 
     public String createEvent(Reservation reservation) {
+        if (calendar == null) throw new CustomException(ErrorCode.GOOGLE_CALENDAR_SYNC_FAILED);
         try {
             Event event = buildEvent(reservation);
             Event created = calendar.events().insert(calendarId, event).execute();
@@ -56,11 +64,12 @@ public class GoogleCalendarService {
             return created.getId();
         } catch (IOException e) {
             log.error("Google Calendar 이벤트 생성 실패", e);
-            return null;
+            throw new CustomException(ErrorCode.GOOGLE_CALENDAR_SYNC_FAILED);
         }
     }
 
     public void updateEvent(String eventId, Reservation reservation) {
+        if (calendar == null) return;
         try {
             Event event = buildEvent(reservation);
             calendar.events().update(calendarId, eventId, event).execute();
@@ -71,6 +80,7 @@ public class GoogleCalendarService {
     }
 
     public void deleteEvent(String eventId) {
+        if (calendar == null) return;
         try {
             calendar.events().delete(calendarId, eventId).execute();
             log.info("Google Calendar 이벤트 삭제: {}", eventId);
@@ -82,6 +92,9 @@ public class GoogleCalendarService {
     private Event buildEvent(Reservation reservation) {
         // reserveTime 형식: "17:00-18:30"
         String[] timeRange = reservation.getReserveTime().split("-");
+        if (timeRange.length != 2) {
+            throw new IllegalArgumentException("Invalid reserveTime format: " + reservation.getReserveTime());
+        }
         LocalTime startTime = LocalTime.parse(timeRange[0]);
         LocalTime endTime = LocalTime.parse(timeRange[1]);
 

@@ -24,7 +24,10 @@ public enum ErrorCode {
     PAYMENT_NOT_PAID(HttpStatus.BAD_REQUEST, "PAYMENT_NOT_PAID", "결제 완료 상태가 아니어서 환불할 수 없습니다."),
 
     // Shopinfo
-    SHOPINFO_NOT_FOUND(HttpStatus.NOT_FOUND, "SHOPINFO_NOT_FOUND", "샵 정보를 찾을 수 없습니다.");
+    SHOPINFO_NOT_FOUND(HttpStatus.NOT_FOUND, "SHOPINFO_NOT_FOUND", "샵 정보를 찾을 수 없습니다."),
+
+    // Google Calendar
+    GOOGLE_CALENDAR_SYNC_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "GOOGLE_CALENDAR_SYNC_FAILED", "구글 캘린더 등록에 실패했습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

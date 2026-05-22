@@ -4,6 +4,7 @@ import com.nailagent.backend.domain.customer.entity.Customer;
 import com.nailagent.backend.domain.customer.repository.CustomerRepository;
 import com.nailagent.backend.domain.reservation.dto.Request.ReservationRequest;
 import com.nailagent.backend.domain.reservation.dto.Request.ReservationUpdateRequest;
+import com.nailagent.backend.domain.reservation.dto.Response.ReservationCreateResponse;
 import com.nailagent.backend.domain.reservation.dto.Response.ReservationListResponse;
 import com.nailagent.backend.domain.reservation.dto.Response.ScheduleResponse;
 import com.nailagent.backend.domain.reservation.entity.Reservation;
@@ -99,7 +100,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public Long createReservation(ReservationRequest request) {
+    public ReservationCreateResponse createReservation(ReservationRequest request) {
 
         // name + phone_num으로 기존 고객 조회, 없으면 신규 등록
         Customer customer = customerRepository
@@ -151,11 +152,12 @@ public class ReservationService {
         reservationRepository.save(reservation);
 
         String eventId = googleCalendarService.createEvent(reservation);
-        if (eventId != null) {
-            reservation.updateGoogleEventId(eventId);
-        }
+        reservation.updateGoogleEventId(eventId);
 
-        return reservation.getId();
+        return ReservationCreateResponse.builder()
+                .id(reservation.getId())
+                .calendarSync(true)
+                .build();
     }
 
     @Transactional
