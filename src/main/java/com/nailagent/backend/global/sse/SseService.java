@@ -1,6 +1,7 @@
 package com.nailagent.backend.global.sse;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -21,6 +22,16 @@ public class SseService {
         emitter = newEmitter;
         newEmitter.onCompletion(() -> { if (emitter == newEmitter) emitter = null; });
         newEmitter.onTimeout(() -> { if (emitter == newEmitter) emitter = null; });
+
+        try {
+            newEmitter.send(SseEmitter.event()
+                    .name("connected")
+                    .data("SSE 연결 성공"));
+        } catch (IOException e) {
+            log.error("SSE 초기 이벤트 전송 실패", e);
+            newEmitter.completeWithError(e);
+        }
+
         return newEmitter;
     }
 
@@ -39,6 +50,19 @@ public class SseService {
                     )));
         } catch (IOException e) {
             log.error("SSE 전송 실패", e);
+            if (emitter == current) emitter = null;
+        }
+    }
+
+    @Scheduled(fixedDelay = 30000)
+    public void sendHeartbeat() {
+        SseEmitter current = emitter;
+        if (current == null) return;
+        try {
+            current.send(SseEmitter.event()
+                    .comment("heartbeat"));
+        } catch (IOException e) {
+            log.warn("SSE heartbeat 전송 실패 - 연결 해제");
             if (emitter == current) emitter = null;
         }
     }
