@@ -7,6 +7,8 @@ import com.nailagent.backend.domain.reservation.dto.Request.ReservationUpdateReq
 import com.nailagent.backend.domain.reservation.dto.Response.ReservationListResponse;
 import com.nailagent.backend.domain.reservation.dto.Response.ScheduleResponse;
 import com.nailagent.backend.domain.reservation.entity.Reservation;
+import com.nailagent.backend.domain.reservation.entity.ReservationImage;
+import com.nailagent.backend.domain.reservation.repository.ReservationImageRepository;
 import com.nailagent.backend.domain.reservation.repository.ReservationRepository;
 import com.nailagent.backend.domain.shopinfo.entity.Shopinfo;
 import com.nailagent.backend.domain.shopinfo.repository.ShopinfoRepository;
@@ -15,6 +17,9 @@ import com.nailagent.backend.global.exception.CustomException;
 import com.nailagent.backend.global.exception.ErrorCode;
 import com.nailagent.backend.global.s3.S3Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -32,6 +37,7 @@ import java.util.List;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final ReservationImageRepository reservationImageRepository;
     private final ShopinfoRepository shopinfoRepository;
     private final CustomerRepository customerRepository;
     private final GoogleCalendarService googleCalendarService;
@@ -73,6 +79,15 @@ public class ReservationService {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Reservation> reservationPage = reservationRepository.findAll(pageable);
 
+        // 예약 ID 목록으로 이미지 일괄 조회 (N+1 방지)
+        List<Long> reservationIds = reservationPage.getContent().stream().map(Reservation::getId).toList();
+        Map<Long, List<String>> imageUrlMap = reservationImageRepository.findAllByReservationIdIn(reservationIds)
+                .stream()
+                .collect(Collectors.groupingBy(
+                        ReservationImage::getReservationId,
+                        Collectors.mapping(ReservationImage::getImageUrl, Collectors.toList())
+                ));
+
         // 예약 목록을 DTO로 변환
         List<ReservationListResponse.BookingItem> bookings = reservationPage.getContent().stream()
                 .map(r -> ReservationListResponse.BookingItem.builder()
@@ -85,7 +100,7 @@ public class ReservationService {
                         .designer(r.getDesigner())
                         .visitStatus(r.getVisitStatus().name())
                         .paymentStatus(r.getPaymentStatus().name())
-                        .imageUrl(r.getImageUrl())
+                        .imageUrls(imageUrlMap.getOrDefault(r.getId(), List.of()))
                         .build())
                 .toList();
 
@@ -184,7 +199,10 @@ public class ReservationService {
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
 
         String imageUrl = s3Service.upload(image, reservation.getId());
-        reservation.updateImageUrl(imageUrl);
+        reservationImageRepository.save(ReservationImage.builder()
+                .reservationId(reservation.getId())
+                .imageUrl(imageUrl)
+                .build());
         return imageUrl;
     }
 
@@ -196,9 +214,10 @@ public class ReservationService {
         if (reservation.getGoogleEventId() != null) {
             googleCalendarService.deleteEvent(reservation.getGoogleEventId());
         }
-        if (reservation.getImageUrl() != null) {
-            s3Service.delete(reservation.getImageUrl());
-        }
+
+        List<ReservationImage> images = reservationImageRepository.findAllByReservationId(reservation.getId());
+        images.forEach(img -> s3Service.delete(img.getImageUrl()));
+        reservationImageRepository.deleteAll(images);
 
         reservationRepository.delete(reservation);
     }

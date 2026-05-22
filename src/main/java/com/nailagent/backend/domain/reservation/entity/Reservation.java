@@ -48,8 +48,6 @@ public class Reservation extends BaseEntity {
 
     private String googleEventId;
 
-    private String imageUrl;
-
     @Builder
     public Reservation(Long customerId, String name, String phoneNum, LocalDate reserveDate,
                        String reserveTime, Integer estimatedDurationMin, String service,
@@ -95,10 +93,6 @@ public class Reservation extends BaseEntity {
 
     public void updateGoogleEventId(String googleEventId) {
         this.googleEventId = googleEventId;
-    }
-
-    public void updateImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
     }
 
     public enum VisitStatus {

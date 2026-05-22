@@ -5,6 +5,7 @@ import lombok.Getter;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.ArrayList;
 
 @Getter
 @Builder
@@ -31,6 +32,6 @@ public class ReservationListResponse {
         private String designer;
         private String visitStatus;
         private String paymentStatus;
-        private String imageUrl;
+        private List<String> imageUrls;
     }
 }
