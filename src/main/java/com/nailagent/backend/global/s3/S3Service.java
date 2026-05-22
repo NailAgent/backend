@@ -49,6 +49,16 @@ public class S3Service {
         return "https://" + bucket + ".s3." + region + ".amazonaws.com/" + key;
     }
 
+    public void delete(String imageUrl) {
+        String key = imageUrl.substring(imageUrl.indexOf("reservations/"));
+        try {
+            s3Client.deleteObject(b -> b.bucket(bucket).key(key));
+            log.info("S3 삭제 완료: {}", key);
+        } catch (Exception e) {
+            log.error("S3 삭제 실패: {}", key, e);
+        }
+    }
+
     private String getExtension(String filename) {
         if (filename == null || !filename.contains(".")) return "";
         return filename.substring(filename.lastIndexOf("."));

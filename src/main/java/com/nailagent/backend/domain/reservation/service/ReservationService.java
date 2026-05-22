@@ -196,6 +196,9 @@ public class ReservationService {
         if (reservation.getGoogleEventId() != null) {
             googleCalendarService.deleteEvent(reservation.getGoogleEventId());
         }
+        if (reservation.getImageUrl() != null) {
+            s3Service.delete(reservation.getImageUrl());
+        }
 
         reservationRepository.delete(reservation);
     }
