@@ -41,3 +41,6 @@ out/
 
 ### Docs ###
 docs/
+
+### Credentials ###
+src/main/resources/google-credentials.json
