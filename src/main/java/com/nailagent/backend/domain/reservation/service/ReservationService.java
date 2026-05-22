@@ -167,6 +167,10 @@ public class ReservationService {
         }
     }
 
+    public boolean existsReservation(Long reservationId) {
+        return reservationRepository.existsById(reservationId);
+    }
+
     @Transactional
     public void deleteReservation(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
