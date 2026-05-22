@@ -51,7 +51,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
-          envs: DB_URL,DB_USERNAME,DB_PASSWORD,TOSS_CLIENT_KEY,TOSS_SECRET_KEY
+          envs: DB_URL,DB_USERNAME,DB_PASSWORD,TOSS_CLIENT_KEY,TOSS_SECRET_KEY,GOOGLE_CALENDAR_ID,GOOGLE_CREDENTIALS_JSON
           script: |
             cat > ~/app/.env << EOF
             SPRING_PROFILES_ACTIVE=prod
@@ -60,7 +60,10 @@ jobs:
             DB_PASSWORD=$DB_PASSWORD
             TOSS_CLIENT_KEY=$TOSS_CLIENT_KEY
             TOSS_SECRET_KEY=$TOSS_SECRET_KEY
+            GOOGLE_CALENDAR_ID=$GOOGLE_CALENDAR_ID
             EOF
+            echo "$GOOGLE_CREDENTIALS_JSON" > ~/app/google-credentials.json
+            echo "GOOGLE_CREDENTIALS_PATH=file:$(realpath ~/app/google-credentials.json)" >> ~/app/.env
             sudo systemctl restart app
         env:
           DB_URL: ${{ secrets.DB_URL }}
@@ -68,3 +71,5 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           TOSS_CLIENT_KEY: ${{ secrets.TOSS_CLIENT_KEY }}
           TOSS_SECRET_KEY: ${{ secrets.TOSS_SECRET_KEY }}
+          GOOGLE_CALENDAR_ID: ${{ secrets.GOOGLE_CALENDAR_ID }}
+          GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}

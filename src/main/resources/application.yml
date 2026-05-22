@@ -25,7 +25,7 @@ toss:
 google:
   calendar:
     id: ${GOOGLE_CALENDAR_ID}
-    credentials-path: classpath:google-credentials.json
+    credentials-path: ${GOOGLE_CREDENTIALS_PATH:classpath:google-credentials.json}
 
 springdoc:
   swagger-ui:
