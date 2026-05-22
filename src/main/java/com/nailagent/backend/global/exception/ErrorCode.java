@@ -27,7 +27,10 @@ public enum ErrorCode {
     SHOPINFO_NOT_FOUND(HttpStatus.NOT_FOUND, "SHOPINFO_NOT_FOUND", "샵 정보를 찾을 수 없습니다."),
 
     // Google Calendar
-    GOOGLE_CALENDAR_SYNC_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "GOOGLE_CALENDAR_SYNC_FAILED", "구글 캘린더 등록에 실패했습니다.");
+    GOOGLE_CALENDAR_SYNC_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "GOOGLE_CALENDAR_SYNC_FAILED", "구글 캘린더 등록에 실패했습니다."),
+
+    // S3
+    S3_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3_UPLOAD_FAILED", "이미지 업로드에 실패했습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

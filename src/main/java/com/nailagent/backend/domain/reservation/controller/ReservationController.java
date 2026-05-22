@@ -12,9 +12,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import java.util.Map;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
@@ -69,6 +71,16 @@ public class ReservationController {
     ) {
         boolean exists = reservationService.existsReservation(reservationId);
         return ResponseEntity.ok(ApiResponse.ok(Map.of("exists", exists)));
+    }
+
+    @Operation(summary = "예약 이미지 업로드", description = "plusfriend_user_key 기준으로 가장 최근 예약에 이미지를 업로드합니다.")
+    @PatchMapping(value = "/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<Map<String, String>>> uploadReservationImage(
+            @RequestParam("plusfriend_user_key") String plusfriendUserKey,
+            @RequestPart("image") MultipartFile image
+    ) {
+        String imageUrl = reservationService.uploadReservationImage(plusfriendUserKey, image);
+        return ResponseEntity.ok(ApiResponse.ok(Map.of("image_url", imageUrl)));
     }
 
     @Operation(summary = "예약 삭제", description = "예약을 삭제합니다.")

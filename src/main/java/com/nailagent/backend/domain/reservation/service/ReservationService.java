@@ -13,6 +13,8 @@ import com.nailagent.backend.domain.shopinfo.repository.ShopinfoRepository;
 import com.nailagent.backend.global.calendar.GoogleCalendarService;
 import com.nailagent.backend.global.exception.CustomException;
 import com.nailagent.backend.global.exception.ErrorCode;
+import com.nailagent.backend.global.s3.S3Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -33,6 +35,7 @@ public class ReservationService {
     private final ShopinfoRepository shopinfoRepository;
     private final CustomerRepository customerRepository;
     private final GoogleCalendarService googleCalendarService;
+    private final S3Service s3Service;
 
     public ScheduleResponse getSchedule(LocalDate date) {
 
@@ -82,6 +85,7 @@ public class ReservationService {
                         .designer(r.getDesigner())
                         .visitStatus(r.getVisitStatus().name())
                         .paymentStatus(r.getPaymentStatus().name())
+                        .imageUrl(r.getImageUrl())
                         .build())
                 .toList();
 
@@ -169,6 +173,19 @@ public class ReservationService {
 
     public boolean existsReservation(Long reservationId) {
         return reservationRepository.existsById(reservationId);
+    }
+
+    @Transactional
+    public String uploadReservationImage(String plusfriendUserKey, MultipartFile image) {
+        Customer customer = customerRepository.findByPlusfriendUserKey(plusfriendUserKey)
+                .orElseThrow(() -> new CustomException(ErrorCode.CUSTOMER_NOT_FOUND));
+
+        Reservation reservation = reservationRepository.findTopByCustomerIdOrderByIdDesc(customer.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
+
+        String imageUrl = s3Service.upload(image, reservation.getId());
+        reservation.updateImageUrl(imageUrl);
+        return imageUrl;
     }
 
     @Transactional

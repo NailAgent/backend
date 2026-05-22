@@ -31,5 +31,6 @@ public class ReservationListResponse {
         private String designer;
         private String visitStatus;
         private String paymentStatus;
+        private String imageUrl;
     }
 }

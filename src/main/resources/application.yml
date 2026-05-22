@@ -27,6 +27,13 @@ google:
     id: ${GOOGLE_CALENDAR_ID}
     credentials-path: ${GOOGLE_CREDENTIALS_PATH:classpath:google-credentials.json}
 
+cloud:
+  aws:
+    s3:
+      bucket: ${AWS_S3_BUCKET}
+    region:
+      static: ${AWS_REGION}
+
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
