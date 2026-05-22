@@ -81,10 +81,14 @@ public class Reservation extends BaseEntity {
         this.paymentKey = paymentKey;
         this.paymentStatus = paymentStatus;
         this.paidAmount = paidAmount;
+        if (paymentStatus == PaymentStatus.PAID) {
+            this.visitStatus = VisitStatus.CONFIRMED;
+        }
     }
 
     public void cancelPayment() {
         this.paymentStatus = PaymentStatus.CANCELLED;
+        this.visitStatus = VisitStatus.PENDING;
     }
 
     public void updateGoogleEventId(String googleEventId) {
