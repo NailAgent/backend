@@ -3,6 +3,7 @@ package com.nailagent.backend.global.sse;
 import com.nailagent.backend.global.common.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -20,7 +21,9 @@ public class SseController {
 
     @Operation(summary = "SSE 연결", description = "사장님 웹에서 실시간 알림을 수신하기 위한 SSE 연결을 맺습니다.")
     @GetMapping(value = "/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter connect() {
+    public SseEmitter connect(HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-cache");
+        response.setHeader("Connection", "keep-alive");
         return sseService.connect();
     }
 
