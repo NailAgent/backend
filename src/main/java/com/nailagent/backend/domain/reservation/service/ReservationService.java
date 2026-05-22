@@ -10,6 +10,7 @@ import com.nailagent.backend.domain.reservation.entity.Reservation;
 import com.nailagent.backend.domain.reservation.repository.ReservationRepository;
 import com.nailagent.backend.domain.shopinfo.entity.Shopinfo;
 import com.nailagent.backend.domain.shopinfo.repository.ShopinfoRepository;
+import com.nailagent.backend.global.calendar.GoogleCalendarService;
 import com.nailagent.backend.global.exception.CustomException;
 import com.nailagent.backend.global.exception.ErrorCode;
 
@@ -31,6 +32,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ShopinfoRepository shopinfoRepository;
     private final CustomerRepository customerRepository;
+    private final GoogleCalendarService googleCalendarService;
 
     public ScheduleResponse getSchedule(LocalDate date) {
 
@@ -147,6 +149,10 @@ public class ReservationService {
                 .build();
 
         reservationRepository.save(reservation);
+
+        String eventId = googleCalendarService.createEvent(reservation);
+        reservation.updateGoogleEventId(eventId);
+
         return reservation.getId();
     }
 
@@ -155,12 +161,21 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
         reservation.update(request);
+
+        if (reservation.getGoogleEventId() != null) {
+            googleCalendarService.updateEvent(reservation.getGoogleEventId(), reservation);
+        }
     }
 
     @Transactional
     public void deleteReservation(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
+
+        if (reservation.getGoogleEventId() != null) {
+            googleCalendarService.deleteEvent(reservation.getGoogleEventId());
+        }
+
         reservationRepository.delete(reservation);
     }
 

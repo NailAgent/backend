@@ -46,6 +46,8 @@ public class Reservation extends BaseEntity {
 
     private Integer paidAmount;
 
+    private String googleEventId;
+
     @Builder
     public Reservation(Long customerId, String name, String phoneNum, LocalDate reserveDate,
                        String reserveTime, Integer estimatedDurationMin, String service,
@@ -83,6 +85,10 @@ public class Reservation extends BaseEntity {
 
     public void cancelPayment() {
         this.paymentStatus = PaymentStatus.CANCELLED;
+    }
+
+    public void updateGoogleEventId(String googleEventId) {
+        this.googleEventId = googleEventId;
     }
 
     public enum VisitStatus {
