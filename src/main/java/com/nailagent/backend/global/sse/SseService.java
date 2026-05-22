@@ -17,19 +17,21 @@ public class SseService {
         if (emitter != null) {
             emitter.complete();
         }
-        emitter = new SseEmitter(Long.MAX_VALUE);
-        emitter.onCompletion(() -> emitter = null);
-        emitter.onTimeout(() -> emitter = null);
-        return emitter;
+        SseEmitter newEmitter = new SseEmitter(Long.MAX_VALUE);
+        emitter = newEmitter;
+        newEmitter.onCompletion(() -> { if (emitter == newEmitter) emitter = null; });
+        newEmitter.onTimeout(() -> { if (emitter == newEmitter) emitter = null; });
+        return newEmitter;
     }
 
     public void send(String customerName, Boolean waiting) {
-        if (emitter == null) {
+        SseEmitter current = emitter;
+        if (current == null) {
             log.warn("SSE 연결된 클라이언트 없음 - 알림 전송 불가");
             return;
         }
         try {
-            emitter.send(SseEmitter.event()
+            current.send(SseEmitter.event()
                     .name("inquiry")
                     .data(Map.of(
                             "customerName", customerName,
@@ -37,7 +39,7 @@ public class SseService {
                     )));
         } catch (IOException e) {
             log.error("SSE 전송 실패", e);
-            emitter = null;
+            if (emitter == current) emitter = null;
         }
     }
 }
