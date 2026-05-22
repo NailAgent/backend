@@ -62,6 +62,15 @@ public class ReservationController {
         return ResponseEntity.ok(ApiResponse.ok(null));
     }
 
+    @Operation(summary = "예약 존재 여부 조회", description = "reservation_id로 예약이 존재하는지 여부를 반환합니다.")
+    @GetMapping("/{reservation_id}/exists")
+    public ResponseEntity<ApiResponse<Map<String, Boolean>>> existsReservation(
+            @PathVariable("reservation_id") Long reservationId
+    ) {
+        boolean exists = reservationService.existsReservation(reservationId);
+        return ResponseEntity.ok(ApiResponse.ok(Map.of("exists", exists)));
+    }
+
     @Operation(summary = "예약 삭제", description = "예약을 삭제합니다.")
     @DeleteMapping("/{reservation_id}")
     public ResponseEntity<ApiResponse<Void>> deleteReservation(
