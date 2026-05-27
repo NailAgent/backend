@@ -198,7 +198,7 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findTopByCustomerIdOrderByIdDesc(customer.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
 
-        String imageUrl = s3Service.upload(image, reservation.getId());
+        String imageUrl = s3Service.upload(image, reservation.getReserveDate().toString(), customer.getName());
         reservationImageRepository.save(ReservationImage.builder()
                 .reservationId(reservation.getId())
                 .imageUrl(imageUrl)

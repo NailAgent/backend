@@ -12,6 +12,8 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 @Slf4j
@@ -27,9 +29,14 @@ public class S3Service {
     @Value("${cloud.aws.region.static}")
     private String region;
 
-    public String upload(MultipartFile file, Long reservationId) {
+    public String upload(MultipartFile file, String reserveDate, String customerName) {
         String extension = getExtension(file.getOriginalFilename());
-        String key = "reservations/" + reservationId + "/" + UUID.randomUUID() + extension;
+        // S3 키는 한글 그대로 저장 (S3는 유니코드 키 지원)
+        String key = reserveDate + "/" + customerName + "/" + UUID.randomUUID() + extension;
+        // URL 반환 시에만 이름 부분 인코딩
+        String encodedName = URLEncoder.encode(customerName, StandardCharsets.UTF_8).replace("+", "%20");
+        String url = "https://" + bucket + ".s3." + region + ".amazonaws.com/"
+                + reserveDate + "/" + encodedName + "/" + key.substring(key.lastIndexOf("/") + 1);
 
         try {
             PutObjectRequest request = PutObjectRequest.builder()
@@ -46,11 +53,14 @@ public class S3Service {
             throw new CustomException(ErrorCode.S3_UPLOAD_FAILED);
         }
 
-        return "https://" + bucket + ".s3." + region + ".amazonaws.com/" + key;
+        return url;
     }
 
     public void delete(String imageUrl) {
-        String key = imageUrl.substring(imageUrl.indexOf("reservations/"));
+        String baseUrl = "https://" + bucket + ".s3." + region + ".amazonaws.com/";
+        // URL에 인코딩된 한글을 디코딩해서 실제 S3 키로 변환
+        String encodedKey = imageUrl.substring(baseUrl.length());
+        String key = java.net.URLDecoder.decode(encodedKey, StandardCharsets.UTF_8);
         try {
             s3Client.deleteObject(b -> b.bucket(bucket).key(key));
             log.info("S3 삭제 완료: {}", key);
