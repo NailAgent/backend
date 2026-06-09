@@ -179,11 +179,15 @@ public class ReservationService {
     public void updateReservation(Long reservationId, ReservationUpdateRequest request) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
-        reservation.update(request);
 
         if (reservation.getGoogleEventId() != null) {
-            googleCalendarService.updateEvent(reservation.getGoogleEventId(), reservation);
+            googleCalendarService.deleteEvent(reservation.getGoogleEventId());
         }
+
+        reservation.update(request);
+
+        String newEventId = googleCalendarService.createEvent(reservation);
+        reservation.updateGoogleEventId(newEventId);
     }
 
     public boolean existsReservation(Long reservationId) {
