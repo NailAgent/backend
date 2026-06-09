@@ -18,12 +18,23 @@ public class Shopinfo {
 
     private String businessHour;
     private Integer closedDays;
+
+    @Column(columnDefinition = "TEXT")
     private String bookingFormText;
+
+    @Column(columnDefinition = "TEXT")
     private String servicesPrice;
+
+    @Column(columnDefinition = "TEXT")
     private String serviceDurations;
+
     private Integer depositAmount;
     private String accountNumber;
+
+    @Column(columnDefinition = "TEXT")
     private String policyText;
+
+    @Column(columnDefinition = "TEXT")
     private String bookingMessageText;
     private LocalDateTime updatedAt;
 
