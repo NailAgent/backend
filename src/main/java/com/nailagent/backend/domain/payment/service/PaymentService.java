@@ -93,6 +93,22 @@ public class PaymentService {
             throw new CustomException(ErrorCode.PAYMENT_NOT_PAID);
         }
 
+        String encodedKey = Base64.getEncoder()
+                .encodeToString((tossSecretKey + ":").getBytes(StandardCharsets.UTF_8));
+
+        try {
+            restClient.post()
+                    .uri("https://api.tosspayments.com/v1/payments/{paymentKey}/cancel",
+                            reservation.getPaymentKey())
+                    .header(HttpHeaders.AUTHORIZATION, "Basic " + encodedKey)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(Map.of("cancelReason", "고객 요청으로 인한 취소"))
+                    .retrieve()
+                    .toBodilessEntity();
+        } catch (RestClientException e) {
+            throw new CustomException(ErrorCode.TOSS_CANCEL_FAILED);
+        }
+
         reservation.cancelPayment();
     }
 }

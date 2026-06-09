@@ -23,6 +23,7 @@ public enum ErrorCode {
     DUPLICATE_PAYMENT_KEY(HttpStatus.CONFLICT, "DUPLICATE_PAYMENT_KEY", "이미 처리된 결제 키입니다."),
     PAYMENT_NOT_PAID(HttpStatus.BAD_REQUEST, "PAYMENT_NOT_PAID", "결제 완료 상태가 아니어서 환불할 수 없습니다."),
     TOSS_CONFIRM_FAILED(HttpStatus.BAD_GATEWAY, "TOSS_CONFIRM_FAILED", "토스 결제 승인에 실패했습니다."),
+    TOSS_CANCEL_FAILED(HttpStatus.BAD_GATEWAY, "TOSS_CANCEL_FAILED", "토스 결제 취소에 실패했습니다."),
 
     // Shopinfo
     SHOPINFO_NOT_FOUND(HttpStatus.NOT_FOUND, "SHOPINFO_NOT_FOUND", "샵 정보를 찾을 수 없습니다."),
