@@ -1,5 +1,6 @@
 package com.nailagent.backend.domain.payment.controller;
 
+import com.nailagent.backend.domain.payment.dto.Request.PaymentConfirmRequest;
 import com.nailagent.backend.domain.payment.dto.Request.PaymentUpdateRequest;
 import com.nailagent.backend.domain.payment.service.PaymentService;
 import com.nailagent.backend.global.common.ApiResponse;
@@ -17,6 +18,15 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentController {
 
     private final PaymentService paymentService;
+
+    @Operation(summary = "결제 최종 승인", description = "토스페이먼츠 결제 승인 API를 호출하고 DB에 PAID 상태를 저장합니다.")
+    @PostMapping("/confirm")
+    public ResponseEntity<ApiResponse<Void>> confirmPayment(
+            @Valid @RequestBody PaymentConfirmRequest request
+    ) {
+        paymentService.confirmPayment(request.getPaymentKey(), request.getOrderId(), request.getAmount());
+        return ResponseEntity.ok(ApiResponse.ok(null));
+    }
 
     @Operation(summary = "결제 상태 업데이트", description = "토스페이먼츠 결제 완료 후 결제 상태를 업데이트합니다. 동일한 payment_key가 이미 존재하면 409 CONFLICT를 반환합니다.")
     @PatchMapping("/{reservation_id}")
