@@ -19,8 +19,10 @@ public class Customer extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String kakaoUserId;
 
+    @Column(unique = true)
     private String plusfriendUserKey;
 
     @Column(nullable = false)
