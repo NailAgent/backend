@@ -45,7 +45,7 @@ public class SseService {
             current.send(SseEmitter.event()
                     .name("inquiry")
                     .data(Map.of(
-                            "customerName", customerName,
+                            "customer_name", customerName,
                             "waiting", waiting
                     )));
         } catch (IOException e) {
