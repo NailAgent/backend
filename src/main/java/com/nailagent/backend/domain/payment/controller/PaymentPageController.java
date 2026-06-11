@@ -25,7 +25,7 @@ public class PaymentPageController {
             @RequestParam String orderId,
             @RequestParam Integer amount,
             @RequestParam String orderName,
-            @RequestParam String customerName,
+            @RequestParam("customer_name") String customerName,
             Model model
     ) {
         model.addAttribute("clientKey", clientKey);
