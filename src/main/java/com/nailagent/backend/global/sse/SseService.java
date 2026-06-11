@@ -65,7 +65,7 @@ public class SseService {
 
     @Scheduled(cron = "0 0 8 * * *", zone = "Asia/Seoul")
     public void sendDailyBriefing() {
-        List<Reservation> reservations = reservationRepository.findAllByReserveDate(LocalDate.now());
+        List<Reservation> reservations = reservationRepository.findAllByReserveDateAndVisitStatusNot(LocalDate.now(), Reservation.VisitStatus.CANCELLED);
 
         List<Map<String, Object>> items = reservations.stream()
                 .map(r -> Map.<String, Object>of(

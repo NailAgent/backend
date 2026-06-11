@@ -58,7 +58,7 @@ public class ReservationService {
                 .orElseThrow(() -> new CustomException(ErrorCode.SHOPINFO_NOT_FOUND));
 
         // 해당 날짜의 예약 목록 조회
-        List<Reservation> reservations = reservationRepository.findAllByReserveDate(date);
+        List<Reservation> reservations = reservationRepository.findAllByReserveDateAndVisitStatusNot(date, VisitStatus.CANCELLED);
 
         // 예약 목록을 DTO로 변환
         List<ScheduleResponse.BookedSchedule> bookedSchedules = reservations.stream()

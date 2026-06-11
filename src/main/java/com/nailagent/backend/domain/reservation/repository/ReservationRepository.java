@@ -15,6 +15,8 @@ import java.util.Optional;
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     List<Reservation> findAllByReserveDate(LocalDate reserveDate);
 
+    List<Reservation> findAllByReserveDateAndVisitStatusNot(LocalDate reserveDate, VisitStatus visitStatus);
+
     Optional<Reservation> findTopByCustomerIdOrderByIdDesc(Long customerId);
 
     @Query("SELECT r FROM Reservation r WHERE r.depositAmount > 0 AND r.paymentStatus = :paymentStatus AND r.visitStatus = :visitStatus AND r.createdAt < :cutoff")
