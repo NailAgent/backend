@@ -1,16 +1,25 @@
 package com.nailagent.backend.global.sse;
 
+import com.nailagent.backend.domain.reservation.entity.Reservation;
+import com.nailagent.backend.domain.reservation.repository.ReservationRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class SseService {
+
+    private final ReservationRepository reservationRepository;
 
     private SseEmitter emitter;
 
@@ -50,6 +59,40 @@ public class SseService {
                     )));
         } catch (IOException e) {
             log.error("SSE 전송 실패", e);
+            if (emitter == current) emitter = null;
+        }
+    }
+
+    @Scheduled(cron = "0 0 8 * * *", zone = "Asia/Seoul")
+    public void sendDailyBriefing() {
+        List<Reservation> reservations = reservationRepository.findAllByReserveDate(LocalDate.now());
+
+        List<Map<String, Object>> items = reservations.stream()
+                .map(r -> Map.<String, Object>of(
+                        "time", r.getReserveTime(),
+                        "name", r.getName(),
+                        "service", r.getService(),
+                        "designer", r.getDesigner() != null ? r.getDesigner() : "사장님"
+                ))
+                .collect(Collectors.toList());
+
+        Map<String, Object> briefing = Map.of(
+                "total", reservations.size(),
+                "reservations", items
+        );
+
+        SseEmitter current = emitter;
+        if (current == null) {
+            log.warn("SSE 연결된 클라이언트 없음 - 브리핑 전송 불가");
+            return;
+        }
+        try {
+            current.send(SseEmitter.event()
+                    .name("daily_briefing")
+                    .data(briefing));
+            log.info("오늘의 예약 브리핑 전송 완료 - 총 {}건", reservations.size());
+        } catch (IOException e) {
+            log.error("브리핑 SSE 전송 실패", e);
             if (emitter == current) emitter = null;
         }
     }
