@@ -95,7 +95,12 @@ public class Reservation extends BaseEntity {
         this.googleEventId = googleEventId;
     }
 
+    public void autoCancel() {
+        this.visitStatus = VisitStatus.CANCELLED;
+        this.paymentStatus = PaymentStatus.CANCELLED;
+    }
+
     public enum VisitStatus {
-        PENDING, CONFIRMED, VISITED, NO_SHOW
+        PENDING, CONFIRMED, VISITED, NO_SHOW, CANCELLED
     }
 }

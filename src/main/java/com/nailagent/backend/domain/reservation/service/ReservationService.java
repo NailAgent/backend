@@ -2,11 +2,14 @@ package com.nailagent.backend.domain.reservation.service;
 
 import com.nailagent.backend.domain.customer.entity.Customer;
 import com.nailagent.backend.domain.customer.repository.CustomerRepository;
+import com.nailagent.backend.domain.payment.entity.Payment.PaymentStatus;
+import com.nailagent.backend.domain.payment.service.PaymentService;
 import com.nailagent.backend.domain.reservation.dto.Request.ReservationRequest;
 import com.nailagent.backend.domain.reservation.dto.Request.ReservationUpdateRequest;
 import com.nailagent.backend.domain.reservation.dto.Response.ReservationListResponse;
 import com.nailagent.backend.domain.reservation.dto.Response.ScheduleResponse;
 import com.nailagent.backend.domain.reservation.entity.Reservation;
+import com.nailagent.backend.domain.reservation.entity.Reservation.VisitStatus;
 import com.nailagent.backend.domain.reservation.entity.ReservationImage;
 import com.nailagent.backend.domain.reservation.repository.ReservationImageRepository;
 import com.nailagent.backend.domain.reservation.repository.ReservationRepository;
@@ -16,8 +19,11 @@ import com.nailagent.backend.global.calendar.GoogleCalendarService;
 import com.nailagent.backend.global.exception.CustomException;
 import com.nailagent.backend.global.exception.ErrorCode;
 import com.nailagent.backend.global.s3.S3Service;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -32,6 +38,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReservationService {
@@ -42,6 +49,7 @@ public class ReservationService {
     private final CustomerRepository customerRepository;
     private final GoogleCalendarService googleCalendarService;
     private final S3Service s3Service;
+    private final PaymentService paymentService;
 
     public ScheduleResponse getSchedule(LocalDate date) {
 
@@ -208,6 +216,28 @@ public class ReservationService {
                 .imageUrl(imageUrl)
                 .build());
         return imageUrl;
+    }
+
+    @Scheduled(fixedDelay = 60000)
+    @Transactional
+    public void autoExpireUnpaidReservations() {
+        LocalDateTime cutoff = LocalDateTime.now().minusMinutes(30);
+        List<Reservation> expired = reservationRepository.findExpiredUnpaidReservations(
+                PaymentStatus.PENDING, VisitStatus.PENDING, cutoff);
+
+        for (Reservation reservation : expired) {
+            if (reservation.getPaymentStatus() == PaymentStatus.PAID) {
+                paymentService.refundPayment(reservation.getId());
+            }
+            if (reservation.getGoogleEventId() != null) {
+                googleCalendarService.deleteEvent(reservation.getGoogleEventId());
+            }
+            reservation.autoCancel();
+        }
+
+        if (!expired.isEmpty()) {
+            log.info("예약금 미납으로 {}건 자동 취소 처리", expired.size());
+        }
     }
 
     @Transactional
