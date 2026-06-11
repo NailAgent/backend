@@ -63,7 +63,7 @@ public class SseService {
         }
     }
 
-    @Scheduled(cron = "0 0 8 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 0 3 * * *", zone = "Asia/Seoul")
     public void sendDailyBriefing() {
         List<Reservation> reservations = reservationRepository.findAllByReserveDateAndVisitStatusNot(LocalDate.now(), Reservation.VisitStatus.CANCELLED);
 
