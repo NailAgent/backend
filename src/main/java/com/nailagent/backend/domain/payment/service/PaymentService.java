@@ -47,11 +47,11 @@ public class PaymentService {
             throw new CustomException(ErrorCode.TOSS_CONFIRM_FAILED);
         }
 
-        String digits = orderId.replaceAll("[^0-9]", "");
-        if (digits.isEmpty()) {
+        String[] parts = orderId.split("_");
+        if (parts.length < 2) {
             throw new CustomException(ErrorCode.RESERVATION_NOT_FOUND);
         }
-        Long reservationId = Long.parseLong(digits);
+        Long reservationId = Long.parseLong(parts[1]);
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
 
