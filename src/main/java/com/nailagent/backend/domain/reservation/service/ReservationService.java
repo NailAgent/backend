@@ -221,7 +221,7 @@ public class ReservationService {
     @Scheduled(fixedDelay = 60000)
     @Transactional
     public void autoExpireUnpaidReservations() {
-        LocalDateTime cutoff = LocalDateTime.now().minusMinutes(30);
+        LocalDateTime cutoff = LocalDateTime.now().minusMinutes(5);
         List<Reservation> expired = reservationRepository.findExpiredUnpaidReservations(
                 PaymentStatus.PENDING, VisitStatus.PENDING, cutoff);
 
