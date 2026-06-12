@@ -50,4 +50,12 @@ public class Customer extends BaseEntity {
     public void updatePlusfriendUserKey(String plusfriendUserKey) {
         this.plusfriendUserKey = plusfriendUserKey;
     }
+
+    public void updatePhoneNum(String phoneNum) {
+        this.phoneNum = phoneNum;
+    }
+
+    public void updateName(String name) {
+        this.name = name;
+    }
 }

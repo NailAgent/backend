@@ -128,33 +128,56 @@ public class ReservationService {
     @Transactional
     public Long createReservation(ReservationRequest request) {
 
-        // name + phone_num으로 기존 고객 조회, 없으면 신규 등록
-        Customer customer = customerRepository
-                .findByNameAndPhoneNum(request.getName(), request.getPhoneNum())
-                .orElseGet(() -> {
-                    try {
-                        return customerRepository.save(
-                                Customer.builder()
-                                        .name(request.getName())
-                                        .phoneNum(request.getPhoneNum())
-                                        .kakaoUserId(request.getKakaoUserId())
-                                        .plusfriendUserKey(request.getPlusfriendUserKey())
-                                        .build()
-                        );
-                    } catch (DataIntegrityViolationException e) {
-                        // 동시 요청으로 unique 제약 위반 시 기존 고객 재조회
-                        return customerRepository
-                                .findByNameAndPhoneNum(request.getName(), request.getPhoneNum())
-                                .orElseThrow(() -> new CustomException(ErrorCode.INTERNAL_SERVER_ERROR));
-                    }
-                });
+        // plusfriendUserKey 있으면 우선 조회, 없으면 name+phoneNum으로 조회, 둘 다 없으면 신규 등록
+        Customer customer;
+        if (request.getPlusfriendUserKey() != null) {
+            customer = customerRepository.findByPlusfriendUserKey(request.getPlusfriendUserKey())
+                    .orElseGet(() -> customerRepository.findByNameAndPhoneNum(request.getName(), request.getPhoneNum())
+                            .orElseGet(() -> {
+                                try {
+                                    return customerRepository.save(
+                                            Customer.builder()
+                                                    .name(request.getName())
+                                                    .phoneNum(request.getPhoneNum())
+                                                    .kakaoUserId(request.getKakaoUserId())
+                                                    .plusfriendUserKey(request.getPlusfriendUserKey())
+                                                    .build()
+                                    );
+                                } catch (DataIntegrityViolationException e) {
+                                    return customerRepository.findByPlusfriendUserKey(request.getPlusfriendUserKey())
+                                            .orElseThrow(() -> new CustomException(ErrorCode.INTERNAL_SERVER_ERROR));
+                                }
+                            }));
+        } else {
+            customer = customerRepository.findByNameAndPhoneNum(request.getName(), request.getPhoneNum())
+                    .orElseGet(() -> {
+                        try {
+                            return customerRepository.save(
+                                    Customer.builder()
+                                            .name(request.getName())
+                                            .phoneNum(request.getPhoneNum())
+                                            .kakaoUserId(request.getKakaoUserId())
+                                            .plusfriendUserKey(request.getPlusfriendUserKey())
+                                            .build()
+                            );
+                        } catch (DataIntegrityViolationException e) {
+                            return customerRepository.findByNameAndPhoneNum(request.getName(), request.getPhoneNum())
+                                    .orElseThrow(() -> new CustomException(ErrorCode.INTERNAL_SERVER_ERROR));
+                        }
+                    });
+        }
 
-        // 기존 고객에 kakao_user_id가 없고 요청에 있는 경우 업데이트 (다음 방문부터 기존 고객으로 인식)
         if (customer.getKakaoUserId() == null && request.getKakaoUserId() != null) {
             customer.updateKakaoUserId(request.getKakaoUserId());
         }
         if (customer.getPlusfriendUserKey() == null && request.getPlusfriendUserKey() != null) {
             customer.updatePlusfriendUserKey(request.getPlusfriendUserKey());
+        }
+        if (request.getPhoneNum() != null && !request.getPhoneNum().equals(customer.getPhoneNum())) {
+            customer.updatePhoneNum(request.getPhoneNum());
+        }
+        if (request.getName() != null && !request.getName().equals(customer.getName())) {
+            customer.updateName(request.getName());
         }
 
         // 예약 생성
