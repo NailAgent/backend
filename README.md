@@ -38,7 +38,7 @@ Reservia는 이런 자유로운 자연어 메시지에서 예약에 필요한 �
 **예약 가능 여부 확인 → 누락 정보 재질문 → 예약금 결제 → Google Calendar 등록**까지 사장님 개입 없이 자동으로 처리합니다.
 
 이 레포지토리는 **Reservia의 백엔드 서버**입니다.<br>
-AI 에이전트(n8n + LangGraph)와 사장님 관리 대시보드(Frontend) 사이에서 예약·고객·결제·샵 설정 관리를 위한 **REST API**를 제공합니다.
+AI 에이전트(n8n / LangGraph)와 사장님 관리 대시보드(Frontend) 사이에서 예약·고객·결제·샵 설정 관리를 위한 **REST API**를 제공합니다.
 
 <br>
 
@@ -48,17 +48,27 @@ AI 에이전트(n8n + LangGraph)와 사장님 관리 대시보드(Frontend) 사�
 
 AWS 위에 **3-Tier Architecture** 기반으로 구성되어 있습니다.
 
+| Tier | 구성 | 설명 |
+|------|------|------|
+| **Presentation** | Nginx (Public Subnet) | 클라이언트 요청을 받아 내부 서버로 전달하는 리버스 프록시 |
+| **Application** | EC2 Backend + EC2 Agent (Private Subnet) | 비즈니스 로직 처리 — Spring Boot 백엔드 및 AI 에이전트 서버 |
+| **Data** | RDS MySQL + S3 (Private Subnet) | 데이터 저장 — 예약·고객·결제 DB 및 이미지 스토리지 |
+
+<br>
+
 <img width="1098" height="722" alt="image" src="https://github.com/user-attachments/assets/bfa6f77b-7c61-4acd-a8c1-5dcc8afa897d" />
 
-| Tier | 구성 요소 | 역할 |
-|------|-----------|------|
-| **Presentation** | Nginx (Public Subnet) | 리버스 프록시, HTTPS 처리 |
-| **Application** | EC2 — Backend (Private Subnet) | Spring Boot 백엔드 서버 |
-| **Application** | EC2 — Agent (Private Subnet) | n8n 기반 AI 에이전트 서버 |
-| **Data** | RDS MySQL (Private Subnet) | 예약·고객·결제 데이터베이스 |
-| **Data** | S3 | 고객 디자인 레퍼런스 이미지 저장 |
-| — | NAT Gateway | Private Subnet → 외부 API 아웃바운드 통신 |
-| — | GitHub Actions | main 브랜치 푸시 시 자동 배포 (CI/CD) |
+<br>
+
+| 구성 요소 | 역할 |
+|-----------|------|
+| **Nginx** (Public Subnet) | 리버스 프록시, HTTPS 처리 |
+| **EC2 — Backend** (Private Subnet) | Spring Boot 백엔드 서버 |
+| **EC2 — Agent** (Private Subnet) | n8n / LangGraph 기반 AI 에이전트 서버 |
+| **RDS** (Private Subnet) | MySQL 데이터베이스 |
+| **S3** | 고객 디자인 레퍼런스 이미지 저장 |
+| **NAT Gateway** | Private Subnet → 외부 API 아웃바운드 통신 |
+| **GitHub Actions** | main 브랜치 푸시 시 자동 배포 (CI/CD) |
 
 <br>
 
@@ -156,7 +166,7 @@ AWS 위에 **3-Tier Architecture** 기반으로 구성되어 있습니다.
 
 | 레포 | 설명 |
 |------|------|
-| [nailgent-agent](#) | n8n + LangGraph 기반 AI 에이전트 |
+| [nailgent-agent](#) | n8n / LangGraph 기반 AI 에이전트 |
 | [nailgent-frontend](#) | 사장님 관리 대시보드 (Vercel 배포) |
 
 <br>
