@@ -1,3 +1,7 @@
+<img width="1098" height="722" alt="image" src="https://github.com/user-attachments/assets/bfa6f77b-7c61-4acd-a8c1-5dcc8afa897d" />
+
+
+
 # 💅 NailAgent Backend
 
 > 네일샵 AI 예약 챗봇 서비스의 백엔드 레포지토리
