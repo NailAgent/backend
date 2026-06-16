@@ -166,8 +166,9 @@ AWS 위에 **3-Tier Architecture** 기반으로 구성되어 있습니다.
 
 | 레포 | 설명 |
 |------|------|
-| [nailgent-agent](#) | n8n / LangGraph 기반 AI 에이전트 |
-| [nailgent-frontend](#) | 사장님 관리 대시보드 (Vercel 배포) |
+| [NailAgent/agent](https://github.com/NailAgent/agent) | LangGraph 기반 AI 에이전트 |
+| [NailAgent/n8n](https://github.com/NailAgent/n8n) | n8n 기반 AI 에이전트 |
+| [NailAgent/frontend](https://github.com/NailAgent/frontend) | 사장님 관리 대시보드 (Vercel 배포) |
 
 <br>
 
