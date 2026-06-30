@@ -56,7 +56,7 @@ AWS 위에 **3-Tier Architecture** 기반으로 구성되어 있습니다.
 
 <br>
 
-<img width="1098" height="722" alt="image" src="https://github.com/user-attachments/assets/bfa6f77b-7c61-4acd-a8c1-5dcc8afa897d" />
+<img width="1098" alt="3-Tier Architecture" src="docs/img.png" />
 
 <br>
 
@@ -69,6 +69,62 @@ AWS 위에 **3-Tier Architecture** 기반으로 구성되어 있습니다.
 | **S3** | 고객 디자인 레퍼런스 이미지 저장 |
 | **NAT Gateway** | Private Subnet → 외부 API 아웃바운드 통신 |
 | **GitHub Actions** | main 브랜치 푸시 시 자동 배포 (CI/CD) |
+
+<br>
+
+### 아키텍처 최적화 — VPC Endpoint 도입
+
+기존에는 S3 접근 트래픽이 **NAT Gateway → 인터넷**을 거쳐 나갔지만, 이 경로를 **VPC Endpoint**로 전환했습니다.<br>
+AWS 내부망으로 S3에 직접 연결되도록 하여 **보안·비용·속도**를 동시에 개선했습니다.
+
+<img width="1098" alt="Architecture Optimization" src="docs/img_1.png" />
+
+<br>
+
+### 검증 — 아웃바운드 트래픽 출구 확인
+
+설계 검토 과정에서 **설계와 실제 설정의 불일치**를 발견하고, AWS 콘솔로 직접 검증했습니다.<br>
+NAT Gateway는 **Public Subnet에 속한 리소스**이므로, 자신이 속한 서브넷의 라우팅 테이블(`NailAgent-public-rt`)을 따라갑니다.<br>
+즉, 아웃바운드 트래픽의 **최종 출구는 NAT이 아닌 IGW(Internet Gateway)** 임을 콘솔 검증을 통해 확인했습니다.
+
+<img width="1098" alt="Verification" src="docs/img_2.png" />
+
+<br>
+
+---
+
+## 트러블슈팅
+
+### 💳 결제 실패 — `RESERVATION_NOT_FOUND` (ORDERID 중복)
+
+**문제 상황**<br>
+결제 시 `RESERVATION_NOT_FOUND`가 발생했습니다. 결제창 인증은 통과했지만 서버에서 예약을 찾지 못해 결제 승인에 실패했습니다.
+
+**근본 원인 — DB 초기화 후 ORDERID 중복**<br>
+개발 중 테스트 목적으로 DB를 직접 초기화하면 우리 쪽 `AUTO_INCREMENT`는 1로 리셋되지만, **Toss는 이미 처리한 ORDERID를 기억**하고 있습니다.<br>
+같은 ORDERID로 재요청 시 Toss가 이를 거절하거나 이전 예약과 매핑 오류가 발생했습니다.
+
+**해결 방법 — ORDERID에 타임스탬프 추가**<br>
+ORDERID를 `booking_{id}_{timestamp}` 형식으로 변경하여, DB가 초기화되더라도 타임스탬프가 달라 **항상 유일한 ORDERID를 보장**하도록 했습니다.
+
+<img width="1098" alt="Troubleshooting - Payment ORDERID" src="docs/img_3.png" />
+
+<br>
+
+### 🗂️ DB 스키마 설계 — 고객 중복 생성 (UNIQUE 제약 재설계)
+
+**문제 상황**<br>
+예약 진행 시 백엔드는 **이름 + 전화번호**로 기존 고객 존재 여부를 확인하고, 없으면 신규 고객을 자동 등록하도록 설계되어 있었습니다.<br>
+그런데 고객이 이름이나 전화번호를 잘못 입력한 뒤 이를 인지하지 못한 채 정정하면, **같은 카카오톡 플러스친구 ID 하나에 서로 다른 고객 레코드가 2건** 생성되었습니다.<br>
+이렇게 중복 생성된 고객은 이후 다른 업로드 로직에서 **충돌**을 일으켰습니다.
+
+**근본 원인 — UNIQUE 제약을 고객의 입력 자율성에 맡김**<br>
+이름·전화번호는 **고객이 자유롭게 입력하는 값**이라 오타·변경이 언제든 발생할 수 있습니다.<br>
+이런 가변적인 값을 식별 기준(UNIQUE)으로 삼은 것이 중복의 직접 원인이었습니다.
+
+**해결 방법 — 식별 기준을 불변값인 플러스친구 ID로 전환**<br>
+UNIQUE 제약을 `(이름, 전화번호)`에서 시스템이 보장하는 불변값인 **카카오톡 플러스친구 ID**로 변경하여 고객을 식별하도록 했습니다.<br>
+이를 통해 **UNIQUE 제약은 사용자 입력 자율성에 맡기면 안 되며, 시스템이 통제 가능한 불변 식별자에 부여해야 한다**는 점을 체감했습니다.
 
 <br>
 
